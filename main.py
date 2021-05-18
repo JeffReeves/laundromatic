@@ -13,7 +13,7 @@ intents         = discord.Intents.default()
 intents.members = True
 client          = discord.Client(intents=intents)
 
-# ON READY
+# READY
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
@@ -24,7 +24,18 @@ async def on_ready():
     print(user)
     await user.send("Ready to watch your laundry!")
 
-# ON MESSAGE
+# DISCONNECT
+@client.event
+async def on_disconnect():
+    print('We have disconnected {0.user}'.format(client))
+    # use fetch_user to allow getting users that 
+    #   aren't in a server with the bot
+    user = await client.fetch_user(dm_user)
+    print('[DEBUG] user:')
+    print(user)
+    await user.send("Sorry, going afk...")
+
+# MESSAGE
 @client.event
 async def on_message(message):
     if message.author == client.user:
