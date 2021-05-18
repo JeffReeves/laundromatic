@@ -15,7 +15,9 @@ client          = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    user = await client.get_user_info(dm_user)
+    user = await client.fetch_user(dm_user)
+    print('[DEBUG] user:')
+    print(user)
     await client.send_message(user, "Ready to watch your laundry!")
 
 @client.event
