@@ -28,6 +28,8 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
         user = client.get_user(message.author.id)
+        print('[DEBUG] user:')
+        print(user)
         await user.send('👀 I see you')
 
 if token:
