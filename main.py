@@ -4,8 +4,12 @@ import discord
 # get token from environment variable
 # TODO: 
 #   - prompt user for token, if not provided as env variable
-token  = os.environ.get('DISCORD_TOKEN')
-client = discord.Client()
+token = os.environ.get('DISCORD_TOKEN')
+
+# add intents to get users by id
+intents         = discord.Intents.default()
+intents.members = True
+client          = discord.Client(intents=intents)
 
 @client.event
 async def on_ready():
@@ -27,7 +31,7 @@ async def on_message(message):
         print(client.user)
         await message.channel.send('Hello!')
 
-        user = client.get_user(message.author)
+        user = client.get_user(message.author.id)
         print('[DEBUG] user:')
         print(user)
         await user.send('👀 I see you')
