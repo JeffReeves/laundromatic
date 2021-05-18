@@ -20,6 +20,8 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         print('[DEBUG] message:')
         print(message)
+        print('[DEBUG] message.author.id:')
+        print(message.author.id)
         print('[DEBUG] client:')
         print(client)
         print('[DEBUG] client.user:')
