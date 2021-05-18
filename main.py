@@ -1,5 +1,4 @@
 import os
-import pprint
 import discord
 
 # get token from environment variable
@@ -27,6 +26,9 @@ async def on_message(message):
         print('[DEBUG] client.user:')
         print(client.user)
         await message.channel.send('Hello!')
+
+        user = client.get_user(message.author.id)
+        await user.send('👀 I see you')
 
 if token:
     client.run(token)
