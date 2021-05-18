@@ -19,11 +19,11 @@ async def on_message(message):
 
     if message.content.startswith('$hello'):
         print('[DEBUG] message:')
-        pprint(message)
+        print(message)
         print('[DEBUG] client:')
-        pprint(client)
+        print(client)
         print('[DEBUG] client.user:')
-        pprint(client.user)
+        print(client.user)
         await message.channel.send('Hello!')
 
 if token:
