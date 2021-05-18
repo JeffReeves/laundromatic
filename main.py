@@ -27,10 +27,13 @@ async def on_message(message):
         print(client.user)
         await message.channel.send('Hello!')
 
-        user = client.get_user(message.author.id)
-        print('[DEBUG] user:')
-        print(user)
-        await user.send('👀 I see you')
+        #user = client.get_user(message.author.id)
+        #print('[DEBUG] user:')
+        #print(user)
+        print('[DEBUG] message.author:')
+        print(message.author)
+        #await user.send('👀 I see you')
+        await message.author.send('👀 I see you')
 
 if token:
     client.run(token)
