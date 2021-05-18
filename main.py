@@ -1,4 +1,5 @@
 import os
+import pprint
 import discord
 
 # get token from environment variable
@@ -17,6 +18,12 @@ async def on_message(message):
         return
 
     if message.content.startswith('$hello'):
+        print('[DEBUG] message:')
+        pprint(message)
+        print('[DEBUG] client:')
+        pprint(client)
+        print('[DEBUG] client.user:')
+        pprint(client.user)
         await message.channel.send('Hello!')
 
 if token:
