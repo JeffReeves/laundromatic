@@ -18,7 +18,7 @@ async def on_ready():
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
-    await client.send_message(user, "Ready to watch your laundry!")
+    await user.send("Ready to watch your laundry!")
 
 @client.event
 async def on_message(message):
