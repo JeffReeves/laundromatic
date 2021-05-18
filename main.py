@@ -28,13 +28,7 @@ async def on_ready():
 # DISCONNECT
 @client.event
 async def on_disconnect():
-    print('We have disconnected {0.user}'.format(client))
-    # use fetch_user to allow getting users that 
-    #   aren't in a server with the bot
-    user = await client.fetch_user(dm_user)
-    print('[DEBUG] user:')
-    print(user)
-    await user.send("Sorry, I disconnected from Discord...")
+    print('Disconnected from Discord')
 
 # ERROR
 @client.event
@@ -47,7 +41,7 @@ async def on_error(event, *args, **kwargs):
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
-    await user.send("Sorry, going afk for now due to an error...")
+    await user.send("Encountered an error...")
 
 # MESSAGE
 @client.event
