@@ -1,4 +1,5 @@
 import os
+import traceback
 import discord
 
 # get token from environment variable
@@ -33,7 +34,20 @@ async def on_disconnect():
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
-    await user.send("Sorry, going afk...")
+    await user.send("Sorry, I disconnected from Discord...")
+
+# ERROR
+@client.event
+async def on_error(event, *args, **kwargs):
+    message = args[0] #Gets the message object
+    print('[DEBUG] message:')
+    print(message)
+    print(traceback.format_exc())
+    #logging.warning(traceback.format_exc()) #logs the error
+    user = await client.fetch_user(dm_user)
+    print('[DEBUG] user:')
+    print(user)
+    await user.send("Sorry, going afk for now due to an error...")
 
 # MESSAGE
 @client.event
