@@ -7,19 +7,24 @@ import discord
 token   = os.environ.get('DISCORD_TOKEN')
 dm_user = os.environ.get('DISCORD_DM_USER')
 
-# add intents to get users by id
+# add intents 
+#   needed to get users by id
 intents         = discord.Intents.default()
 intents.members = True
 client          = discord.Client(intents=intents)
 
+# ON READY
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    # use fetch_user to allow getting users that 
+    #   aren't in a server with the bot
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
     await user.send("Ready to watch your laundry!")
 
+# ON MESSAGE
 @client.event
 async def on_message(message):
     if message.author == client.user:
