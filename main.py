@@ -1,5 +1,10 @@
+import os
 import discord
 
+# get token from environment variable
+# TODO: 
+#   - prompt user for token, if not provided as env variable
+token  = os.environ.get('DISCORD_TOKEN')
 client = discord.Client()
 
 @client.event
@@ -14,4 +19,9 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-client.run('your token here')
+if token:
+    client.run(token)
+else:
+    print('[ERROR] No token provided')
+    print('[HELP] Set DISCORD_TOKEN variable and run again')
+    print('[EXAMPLE] export DISCORD_TOKEN=\'mycooltoken\'')
