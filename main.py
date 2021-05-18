@@ -46,11 +46,6 @@ async def on_message(message):
         #print(message.author)
         #await message.author.send('👀 I see you')
 
-@client.command(pass_context=True)
-async def dm(ctx):
-    user=await client.get_user_info("User's ID here")
-    await client.send_message(user, "Your message goes here")
-
 if token:
     client.run(token)
 else:
