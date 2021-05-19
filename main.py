@@ -3,6 +3,8 @@ import traceback
 import getpass
 import discord
 
+prefix = '!'
+
 # use environment variable or user input
 token   = os.environ.get('DISCORD_TOKEN')   or getpass.getpass('Token: ')
 dm_user = os.environ.get('DISCORD_DM_USER') or input('User ID: ')
@@ -55,10 +57,15 @@ async def on_error(event, *args, **kwargs):
 # MESSAGE
 @client.event
 async def on_message(message):
+
+    # return if the message is from the bot
     if message.author == client.user:
         return
 
-    if message.content.startswith('$hello'):
+    # check for command prefix
+    if message.content.startswith(prefix):
+
+        # debugging
         print('[DEBUG] message:')
         print(message)
         print('[DEBUG] message.author.id:')
@@ -67,21 +74,18 @@ async def on_message(message):
         print(client)
         print('[DEBUG] client.user:')
         print(client.user)
-        await message.channel.send('Hello!')
-
         print('[DEBUG] message.channel:')
         print(message.channel)
         print('[DEBUG] message.channel.type:')
         print(message.channel.type)
-        # get the user by id
-        user = client.get_user(message.author.id)
-        print('[DEBUG] user:')
-        print(user)
-        await user.send('👀 I see you')
-        # alternative to send a DM to the message's author
-        #print('[DEBUG] message.author:')
-        #print(message.author)
-        #await message.author.send('👀 I see you')
+
+        # send a message back to the channel
+        await message.channel.send('Hello!')
+
+        # check if private message
+        if message.channel.type == 'private':
+            # send PM to the author
+            await message.author.send('👀 I see you 👍')
 
 if token:
     client.run(token)
