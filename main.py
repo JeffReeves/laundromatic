@@ -71,6 +71,8 @@ async def on_message(message):
 
         print('[DEBUG] message.channel:')
         print(message.channel)
+        print('[DEBUG] message.channel.type:')
+        print(message.channel.type)
         # get the user by id
         user = client.get_user(message.author.id)
         print('[DEBUG] user:')
