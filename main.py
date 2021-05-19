@@ -4,13 +4,8 @@ import getpass
 import discord
 
 # use environment variable or user input
-token = os.environ.get('DISCORD_TOKEN')
-if not token:
-    token = getpass.getpass('Token: ')
-
-dm_user = os.environ.get('DISCORD_DM_USER')
-if not dm_user:
-    dm_user = input('User ID: ')
+token   = os.environ.get('DISCORD_TOKEN')   or getpass.getpass('Token: ')
+dm_user = os.environ.get('DISCORD_DM_USER') or input('User ID: ')
 
 # create client 
 # NOTE: intents needed to get users by id
