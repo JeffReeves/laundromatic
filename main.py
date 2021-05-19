@@ -13,6 +13,17 @@ intents         = discord.Intents.default()
 intents.members = True
 client          = discord.Client(intents=intents)
 
+# get user by ID
+async def get_user_by_id():
+    user = await client.fetch_user(dm_user)
+    print('[DEBUG] user:')
+    print(user)
+    return user
+
+# send DM
+async def send_dm(user):
+    await user.send('Sending you a message')
+
 # READY
 @client.event
 async def on_ready():
@@ -20,10 +31,12 @@ async def on_ready():
     # fetch the user ID for the user to DM
     # TODO:
     #   - create array of users to DM
-    user = await client.fetch_user(dm_user)
-    print('[DEBUG] user:')
-    print(user)
-    await user.send('Ready to watch your laundry!')
+    # user = await client.fetch_user(dm_user)
+    # print('[DEBUG] user:')
+    # print(user)
+    # await user.send('Ready to watch your laundry!')
+    user = get_user_by_id(dm_user)
+    send_dm(user)
 
 # DISCONNECT
 @client.event
