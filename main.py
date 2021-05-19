@@ -14,7 +14,7 @@ intents.members = True
 client          = discord.Client(intents=intents)
 
 # get user by ID
-async def get_user_by_id():
+async def get_user_by_id(dm_user):
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
