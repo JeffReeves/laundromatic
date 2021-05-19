@@ -31,10 +31,6 @@ async def on_ready():
     # fetch the user ID for the user to DM
     # TODO:
     #   - create array of users to DM
-    # user = await client.fetch_user(dm_user)
-    # print('[DEBUG] user:')
-    # print(user)
-    # await user.send('Ready to watch your laundry!')
     user = await get_user_by_id(dm_user)
     await send_dm(user)
 
@@ -73,6 +69,8 @@ async def on_message(message):
         print(client.user)
         await message.channel.send('Hello!')
 
+        print('[DEBUG] message.channel:')
+        print(message.channel)
         # get the user by id
         user = client.get_user(message.author.id)
         print('[DEBUG] user:')
