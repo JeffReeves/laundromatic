@@ -23,8 +23,8 @@ async def get_user_by_id(dm_user):
     return user
 
 # send DM
-async def send_dm(user):
-    await user.send('Sending you a message')
+async def send_dm(user, message = 'Sending you a message'):
+    await user.send(message)
 
 # READY
 @client.event
@@ -85,7 +85,9 @@ async def on_message(message):
         # check if private message
         if message.channel.type == 'private':
             # send PM to the author
-            await message.author.send('👀 I see you 👍')
+            #await message.author.send('👀 I see you 👍')
+            user = await get_user_by_id(message.author.id)
+            await send_dm(user, message = '👀 I see you 👍')
 
 if token:
     client.run(token)
