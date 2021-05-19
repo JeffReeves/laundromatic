@@ -1,15 +1,14 @@
 import os
 import traceback
+import getpass
 import discord
 
-# get token from environment variable
-# TODO: 
-#   - prompt user for token, if not provided as env variable
-token   = os.environ.get('DISCORD_TOKEN')
-dm_user = os.environ.get('DISCORD_DM_USER')
+# use environment variable or user input
+token   = os.environ.get('DISCORD_TOKEN')   or getpass.getpass()
+dm_user = os.environ.get('DISCORD_DM_USER') or input("User ID: ")
 
-# add intents 
-#   needed to get users by id
+# create client 
+# NOTE: intents needed to get users by id
 intents         = discord.Intents.default()
 intents.members = True
 client          = discord.Client(intents=intents)
@@ -17,9 +16,10 @@ client          = discord.Client(intents=intents)
 # READY
 @client.event
 async def on_ready():
-    print('We have logged in as {0.user}'.format(client))
-    # use fetch_user to allow getting users that 
-    #   aren't in a server with the bot
+    print('[INFO] Bot {0.user} is ready'.format(client))
+    # fetch the user ID for the user to DM
+    # TODO:
+    #   - create array of users to DM
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
@@ -28,7 +28,7 @@ async def on_ready():
 # DISCONNECT
 @client.event
 async def on_disconnect():
-    print('Disconnected from Discord')
+    print('[WARN] Disconnected from Discord')
 
 # ERROR
 @client.event
