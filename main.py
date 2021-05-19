@@ -4,8 +4,8 @@ import getpass
 import discord
 
 # use environment variable or user input
-token   = os.environ.get('DISCORD_TOKEN')   or getpass.getpass()
-dm_user = os.environ.get('DISCORD_DM_USER') or input("User ID: ")
+token   = os.environ.get('DISCORD_TOKEN')   or getpass.getpass('Token: ')
+dm_user = os.environ.get('DISCORD_DM_USER') or input('User ID: ')
 
 # create client 
 # NOTE: intents needed to get users by id
@@ -23,7 +23,7 @@ async def on_ready():
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
-    await user.send("Ready to watch your laundry!")
+    await user.send('Ready to watch your laundry!')
 
 # DISCONNECT
 @client.event
@@ -41,7 +41,7 @@ async def on_error(event, *args, **kwargs):
     user = await client.fetch_user(dm_user)
     print('[DEBUG] user:')
     print(user)
-    await user.send("Encountered an error...")
+    await user.send('Encountered an error...')
 
 # MESSAGE
 @client.event
