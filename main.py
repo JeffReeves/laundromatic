@@ -83,12 +83,12 @@ async def on_message(message):
         await message.channel.send('Hello!')
 
         # check if private message
-        if message.channel.type == 'private':
+        if message.channel.type == discord.ChannelType.private:
             print('[DEBUG] Received a private message')
             # send PM to the author
-            #await message.author.send('👀 I see you 👍')
-            user = await get_user_by_id(message.author.id)
-            await send_dm(user, message = '👀 I see you 👍')
+            await message.author.send('👀 I see you 👍')
+            #user = await get_user_by_id(message.author.id)
+            #await send_dm(user, message = '👀 I see you 👍')
 
 if token:
     client.run(token)
