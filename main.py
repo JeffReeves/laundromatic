@@ -35,8 +35,8 @@ async def on_ready():
     # print('[DEBUG] user:')
     # print(user)
     # await user.send('Ready to watch your laundry!')
-    user = get_user_by_id(dm_user)
-    send_dm(user)
+    user = await get_user_by_id(dm_user)
+    await send_dm(user)
 
 # DISCONNECT
 @client.event
