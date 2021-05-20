@@ -151,19 +151,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # create groups of arguments
-    group_tokens    = parser.add_mutually_exclusive_group(required = True, type = str)
-    group_watchers  = parser.add_mutually_exclusive_group(required = True, type = str)
+    group_tokens    = parser.add_mutually_exclusive_group(required = True)
+    group_watchers  = parser.add_mutually_exclusive_group(required = True)
 
     # add arguments to parser
     parser.add_argument('-d', 
                         '--debug', 
-                        dest    = 'debug', 
+                        dest    = 'debug',
+                        type    = bool,
                         action  = 'store_true', 
                         help    = 'Debug Mode')
 
     group_tokens.add_argument('-t', 
                               '--token',
                               dest      = 'token',
+                              type      = str,
                               help      = 'Bot Token')
 
     group_tokens.add_argument('-b', 
@@ -174,10 +176,14 @@ if __name__ == "__main__":
 
     group_watchers.add_argument('-w', 
                                 '--watcher', 
+                                dest    = 'watcher',
+                                type    = str,
                                 action  = 'append', 
                                 help    = 'User ID of Watcher')
 
     group_watchers.add_argument('--watchers', 
+                                dest    = 'watchers',
+                                type    = str,
                                 nargs   = '+', 
                                 help    = 'User IDs for Watchers (space separated list)')
 
