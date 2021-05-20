@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     # custom types for argparse
     def decode_base64_token(base64_token):
-        return base64.base64decode(base64_token)
+        return base64.b64decode(base64_token)
 
     # create parser
     parser = argparse.ArgumentParser()
