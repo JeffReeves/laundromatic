@@ -1,8 +1,18 @@
+#!/usr/bin/env python3
+"""
+purpose: Discord Bot that sends laundry status messages.
+    Built for use with a Raspberry Pi + 
+        photoresistor (light sensor) attached via GPIO pins.
+
+author: Jeff Reeves
+"""
+
 import os
 import traceback
 import getpass
 import discord
 
+debug  = True
 prefix = '!'
 
 # use environment variable or user input
@@ -10,7 +20,10 @@ token   = os.environ.get('DISCORD_TOKEN')   or getpass.getpass('Token: ')
 dm_user = os.environ.get('DISCORD_DM_USER') or input('User ID: ')
 
 # create client 
-# NOTE: intents needed to get users by id
+# NOTE: intents are needed to get users by id, this must be set in 
+#   the Discord Dev Center:
+#       https://discord.com/developers/applications/ -> 
+#       Application -> Bot -> SERVER MEMBERS INTENT (ON)
 intents         = discord.Intents.default()
 intents.members = True
 client          = discord.Client(intents=intents)
@@ -18,8 +31,9 @@ client          = discord.Client(intents=intents)
 # get user by ID
 async def get_user_by_id(dm_user):
     user = await client.fetch_user(dm_user)
-    print('[DEBUG] user:')
-    print(user)
+    if debug:
+        print('[DEBUG] user:')
+        print(user)
     return user
 
 # send DM
@@ -45,13 +59,15 @@ async def on_disconnect():
 @client.event
 async def on_error(event, *args, **kwargs):
     message = args[0] #Gets the message object
-    print('[DEBUG] message:')
-    print(message)
+    if debug:
+        print('[DEBUG] message:')
+        print(message)
     print(traceback.format_exc())
     #logging.warning(traceback.format_exc()) #logs the error
     user = await client.fetch_user(dm_user)
-    print('[DEBUG] user:')
-    print(user)
+    if debug:
+        print('[DEBUG] user:')
+        print(user)
     await user.send('Encountered an error...')
 
 # MESSAGE
@@ -66,25 +82,27 @@ async def on_message(message):
     if message.content.startswith(prefix):
 
         # debugging
-        print('[DEBUG] message:')
-        print(message)
-        print('[DEBUG] message.author.id:')
-        print(message.author.id)
-        print('[DEBUG] client:')
-        print(client)
-        print('[DEBUG] client.user:')
-        print(client.user)
-        print('[DEBUG] message.channel:')
-        print(message.channel)
-        print('[DEBUG] message.channel.type:')
-        print(message.channel.type)
+        if debug:
+            print('[DEBUG] message:')
+            print(message)
+            print('[DEBUG] message.author.id:')
+            print(message.author.id)
+            print('[DEBUG] client:')
+            print(client)
+            print('[DEBUG] client.user:')
+            print(client.user)
+            print('[DEBUG] message.channel:')
+            print(message.channel)
+            print('[DEBUG] message.channel.type:')
+            print(message.channel.type)
 
         # send a message back to the channel
         await message.channel.send('Hello!')
 
         # check if private message
         if message.channel.type == discord.ChannelType.private:
-            print('[DEBUG] Received a private message')
+            if debug:
+                print('[DEBUG] Received a private message')
             # send PM to the author
             await message.author.send('👀 I see you 👍')
             #user = await get_user_by_id(message.author.id)
