@@ -16,6 +16,7 @@ Coming Soon&trade;
 Things I'd like to get around to, eventually...
 
 0. Write instructions for setup and use.
-1. Add tests to verify code works as expected with changes.
-2. Modularize the code into parts for easier maintenance.
-3. Containerize code and put into image repo.
+1. Possibly add config file parsing
+2. Add tests to verify code works as expected with changes.
+3. Modularize the code into parts for easier maintenance.
+4. Containerize code and put into image repo.
