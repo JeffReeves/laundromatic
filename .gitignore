@@ -1,3 +1,6 @@
+# main JSON config file (to prevent accidental commits)
+config.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
