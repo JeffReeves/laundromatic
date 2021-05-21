@@ -31,16 +31,19 @@ def main(args):
 
     # use arguments if available, else 
     #   get from environment variable or user input
-    if args.token:
-        token = args.token
-    else:
-        token = os.environ.get('DISCORD_TOKEN') or getpass('Bot Token: ')
+    token    = (args.token or 
+                os.environ.get('DISCORD_TOKEN') or 
+                getpass('Bot Token: '))
 
-    if args.watchers:
-        watchers = args.watchers
-    else:
-        watchers = os.environ.get('DISCORD_WATCHER') or input('Watchers (space separated user IDs): ').split()
+    watchers = (args.watchers or 
+                os.environ.get('DISCORD_WATCHER') or 
+                input('Watchers (space separated user IDs):').split())
 
+    if debug:
+        print('[DEBUG] token:')
+        print(token)
+        print('[DEBUG] watchers:')
+        pprint(watchers)
 
     # debug testing a single watcher
     watcher = watchers[0]
