@@ -22,10 +22,9 @@ import discord
 def main(args):
 
     # debugging flag
-    debug = False
+    debug = args.debug or False
 
-    if args.debug:
-        debug = args.debug
+    if debug:
         print('[DEBUG] Main called')
         print('[DEBUG] All arguments passed to script:')
         pprint(args)
