@@ -12,10 +12,12 @@ author: Jeff Reeves
 from pprint import pprint
 import os
 import traceback
+import json
 import base64
 import argparse
 import getpass
 import discord
+
 
 #==[ MAIN ]================================================================================================================================
 
@@ -29,15 +31,9 @@ def main(args):
         print('[DEBUG] All arguments passed to script:')
         pprint(args)
 
-    # use arguments if available, else 
-    #   get from environment variable or user input
-    token    = (args.token or 
-                os.environ.get('DISCORD_TOKEN') or 
-                getpass('Bot Token: '))
-
-    watchers = (args.watchers or 
-                os.environ.get('DISCORD_WATCHER') or 
-                input('Watchers (space separated user IDs):').split())
+    # use arguments if available, else get from user input
+    token    = args.token    or getpass('Token: ')
+    watchers = args.watchers or input('Watchers (space separated user IDs):').split()
 
     if debug:
         print('[DEBUG] token:')
@@ -154,51 +150,90 @@ def main(args):
 
 if __name__ == "__main__":
 
-    # custom types for argparse
-    def decode_base64_token(base64_token):
-        return base64.b64decode(base64_token).decode('UTF-8')
+    # these important values must be set
+    token    = None
+    watchers = []
 
-    # create parser
+    # the values get set from (in order):
+    #   1. JSON config file
+    #   2. environment variables
+    #   3. arguments passed via command line
+
+
+    # 1. JSON config file
+    config_file = 'config.json'
+    if os.path.exists(config_file):
+        with open(config_file) as json_config_file:
+            config = json.load(json_config_file)
+
+            if config['token']:
+                token = config['token']
+
+            if all(config['watchers']):
+                watchers = config['watchers']
+
+    # 2. environment variables
+    if not token:
+        token    = os.environ.get('DISCORD_TOKEN')
+
+    if not watchers:
+        watchers = os.environ.get('DISCORD_WATCHERS')
+        if watchers:
+            watchers = watchers.split() # convert space separated string to list
+
+    # 3. arguments on command line
+
     parser = argparse.ArgumentParser()
 
-    # create groups of arguments
-    group_tokens    = parser.add_mutually_exclusive_group(required = True)
-    group_watchers  = parser.add_mutually_exclusive_group(required = True)
-
-    # add arguments to parser
     parser.add_argument('-d', 
                         '--debug', 
                         dest    = 'debug',
                         action  = 'store_true', 
                         help    = 'Debug Mode')
 
-    group_tokens.add_argument('-t', 
-                              '--token',
-                              dest      = 'token',
-                              type      = str,
-                              help      = 'Bot Token')
+    if not token:
 
-    group_tokens.add_argument('-b', 
-                              '--base64_token',
-                              dest      = 'token',
-                              type      = decode_base64_token, 
-                              help      = 'Bot Token (base64)')
+        # custom type for argparse
+        def decode_base64_token(base64_token):
+            return base64.b64decode(base64_token).decode('UTF-8')
 
-    group_watchers.add_argument('-w', 
-                                '--watcher', 
-                                dest    = 'watchers',
-                                type    = str,
-                                action  = 'append', 
-                                help    = 'User ID of Watcher')
+        group_tokens = parser.add_mutually_exclusive_group(required = True)
 
-    group_watchers.add_argument('--watchers', 
-                                dest    = 'watchers',
-                                type    = str,
-                                nargs   = '+', 
-                                help    = 'User IDs for Watchers (space separated list)')
+        group_tokens.add_argument('-t', 
+                                  '--token',
+                                  dest      = 'token',
+                                  type      = str,
+                                  help      = 'Token')
 
-    # parse argument
+        group_tokens.add_argument('-b', 
+                                  '--base64_token',
+                                  dest      = 'token',
+                                  type      = decode_base64_token, 
+                                  help      = 'Token (base64)')
+
+    if not watchers:
+
+        group_watchers = parser.add_mutually_exclusive_group(required = True)
+
+        group_watchers.add_argument('-w', 
+                                    '--watcher', 
+                                    dest    = 'watchers',
+                                    type    = str,
+                                    action  = 'append', 
+                                    help    = 'User ID of Watcher (can be used multiple times)')
+
+        group_watchers.add_argument('--watchers', 
+                                    dest    = 'watchers',
+                                    type    = str,
+                                    nargs   = '+', 
+                                    help    = 'User IDs for Watchers (space separated list)')
+
     args = parser.parse_args()
 
-    # pass all arguments as a dictionary to the main function
+    if 'token' not in args:
+        args['token'] = token
+
+    if 'watchers' not in args:
+        args['watchers'] = watchers
+
     main(args)
