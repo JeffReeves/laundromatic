@@ -41,9 +41,6 @@ def main(args):
         print('[DEBUG] watchers:')
         pprint(watchers)
 
-    # debug testing a single watcher
-    watcher = watchers[0]
-
     # create client 
     # NOTE: intents are needed to get users by id, this must be set in 
     #   the Discord Dev Center:
@@ -72,11 +69,10 @@ def main(args):
     @client.event
     async def on_ready():
         print('[INFO] Bot {0.user} is ready'.format(client))
-        # fetch the user ID for the user to DM
-        # TODO:
-        #   - create array of users to DM
-        user = await get_user_by_id(watcher)
-        await send_dm(user)
+        for watcher in enumerate(watchers):
+            user = await get_user_by_id(watcher)
+            if user:
+                await send_dm(user)
 
     # DISCONNECT
     @client.event
@@ -92,11 +88,13 @@ def main(args):
             print(message)
         print(traceback.format_exc())
         #logging.warning(traceback.format_exc()) #logs the error
-        user = await client.fetch_user(watcher)
-        if debug:
-            print('[DEBUG] user:')
-            print(user)
-        await user.send('Encountered an error...')
+        for watcher in enumerate(watchers):
+            user = await get_user_by_id(watcher)
+            if user:
+                if debug:
+                    print('[DEBUG] user:')
+                    print(user)
+                await send_dm(user, 'Encountered an error...')
 
     # MESSAGE
     @client.event
