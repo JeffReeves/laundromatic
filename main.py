@@ -172,6 +172,7 @@ if __name__ == "__main__":
             if all(config['watchers']):
                 watchers = config['watchers']
 
+
     # 2. environment variables
     if not token:
         token    = os.environ.get('DISCORD_TOKEN')
@@ -181,8 +182,8 @@ if __name__ == "__main__":
         if watchers:
             watchers = watchers.split() # convert space separated string to list
 
-    # 3. arguments on command line
 
+    # 3. arguments on command line
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-d', 
