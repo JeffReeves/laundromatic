@@ -21,12 +21,10 @@ import discord
 
 def main(args):
 
-    print('[DEBUG] Main called')
-    print('[DEBUG] All arguments passed to script:')
-    pprint(args)
-
     if args.debug:
-        print('[DEBUG] Yay args.debug is True!')
+        print('[DEBUG] Main called')
+        print('[DEBUG] All arguments passed to script:')
+        pprint(args)
 
     # use arguments if available, else 
     #   get from environment variable or user input
@@ -54,13 +52,12 @@ def main(args):
     client          = discord.Client(intents = intents)
 
     # config 
-    debug    = True
     prefix   = '!'
 
     # get user by ID
     async def get_user_by_id(watcher):
         user = await client.fetch_user(watcher)
-        if debug:
+        if args.debug:
             print('[DEBUG] user:')
             print(user)
         return user
@@ -88,13 +85,13 @@ def main(args):
     @client.event
     async def on_error(event, *args, **kwargs):
         message = args[0] #Gets the message object
-        if debug:
+        if args.debug:
             print('[DEBUG] message:')
             print(message)
         print(traceback.format_exc())
         #logging.warning(traceback.format_exc()) #logs the error
         user = await client.fetch_user(watcher)
-        if debug:
+        if args.debug:
             print('[DEBUG] user:')
             print(user)
         await user.send('Encountered an error...')
@@ -111,7 +108,7 @@ def main(args):
         if message.content.startswith(prefix):
 
             # debugging
-            if debug:
+            if args.debug:
                 print('[DEBUG] message:')
                 print(message)
                 print('[DEBUG] message.author.id:')
@@ -130,7 +127,7 @@ def main(args):
 
             # check if private message
             if message.channel.type == discord.ChannelType.private:
-                if debug:
+                if args.debug:
                     print('[DEBUG] Received a private message')
                 # send PM to the author
                 await message.author.send('👀 I see you 👍')
