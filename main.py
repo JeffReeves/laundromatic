@@ -43,7 +43,7 @@ def main(args):
 
     # debug testing a single watcher
     watcher = watchers[0]
-    
+
     # create client 
     # NOTE: intents are needed to get users by id, this must be set in 
     #   the Discord Dev Center:
@@ -153,7 +153,7 @@ if __name__ == "__main__":
 
     # custom types for argparse
     def decode_base64_token(base64_token):
-        return base64.b64decode(base64_token)
+        return base64.b64decode(base64_token).decode('UTF-8')
 
     # create parser
     parser = argparse.ArgumentParser()
