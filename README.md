@@ -12,6 +12,9 @@ This application requires:
 - A Discord server with a `#laundromatic` channel.
 - [Creating a Discord bot](https://discord.com/developers/applications) and using its token.
 - At least one [Discord user ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) for private messages (PMs).
+- A Raspberry Pi 3b or 4b
+- A photoresistor with DO (digital output)
+- Python 3
 
 ### Clone Project and Install Packages
 
@@ -38,6 +41,10 @@ This application requires:
     ```sh 
     pip install -r requirements.txt
     ```
+
+### Configure Hardware
+
+Coming Soon&trade;
 
 ## How to Use
 
