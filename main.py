@@ -231,9 +231,9 @@ if __name__ == "__main__":
     args, unknown = parser.parse_known_args()
 
     if 'token' not in args:
-        args['token'] = token
+        args.token = token
 
     if 'watchers' not in args:
-        args['watchers'] = watchers
+        args.watchers = watchers
 
     main(args)
