@@ -28,6 +28,22 @@ def main(args):
     if args.debug:
         print('[DEBUG] Yay args.debug is True!')
 
+    # use arguments if available, else 
+    #   get from environment variable or user input
+    if args.token:
+        token = args.token
+    else:
+        token = os.environ.get('DISCORD_TOKEN') or getpass('Bot Token: ')
+
+    if args.watchers:
+        watchers = args.watchers
+    else:
+        watchers = os.environ.get('DISCORD_WATCHER') or input('Watchers (space separated user IDs): ').split()
+
+
+    # debug testing a single watcher
+    watcher = watchers[0]
+    
     # create client 
     # NOTE: intents are needed to get users by id, this must be set in 
     #   the Discord Dev Center:
@@ -40,12 +56,6 @@ def main(args):
     # config 
     debug    = True
     prefix   = '!'
-    watchers = []
-
-    # try to get values from environment variables
-    token    = os.environ.get('DISCORD_TOKEN')
-    watcher  = os.environ.get('DISCORD_WATCHER')
-    
 
     # get user by ID
     async def get_user_by_id(watcher):
@@ -173,7 +183,7 @@ if __name__ == "__main__":
 
     group_watchers.add_argument('-w', 
                                 '--watcher', 
-                                dest    = 'watcher',
+                                dest    = 'watchers',
                                 type    = str,
                                 action  = 'append', 
                                 help    = 'User ID of Watcher')
@@ -186,10 +196,6 @@ if __name__ == "__main__":
 
     # parse argument
     args = parser.parse_args()
-
-    # decode encrypted token
-    if not args.token and not args.base64_token: 
-        args.token = getpass('Bot Token: ')
 
     # pass all arguments as a dictionary to the main function
     main(args)
