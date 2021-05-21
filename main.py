@@ -21,7 +21,11 @@ import discord
 
 def main(args):
 
+    # debugging flag
+    debug = False
+
     if args.debug:
+        debug = args.debug
         print('[DEBUG] Main called')
         print('[DEBUG] All arguments passed to script:')
         pprint(args)
@@ -57,7 +61,7 @@ def main(args):
     # get user by ID
     async def get_user_by_id(watcher):
         user = await client.fetch_user(watcher)
-        if args.debug:
+        if debug:
             print('[DEBUG] user:')
             print(user)
         return user
@@ -85,13 +89,13 @@ def main(args):
     @client.event
     async def on_error(event, *args, **kwargs):
         message = args[0] #Gets the message object
-        if args.debug:
+        if debug:
             print('[DEBUG] message:')
             print(message)
         print(traceback.format_exc())
         #logging.warning(traceback.format_exc()) #logs the error
         user = await client.fetch_user(watcher)
-        if args.debug:
+        if debug:
             print('[DEBUG] user:')
             print(user)
         await user.send('Encountered an error...')
@@ -108,7 +112,7 @@ def main(args):
         if message.content.startswith(prefix):
 
             # debugging
-            if args.debug:
+            if debug:
                 print('[DEBUG] message:')
                 print(message)
                 print('[DEBUG] message.author.id:')
@@ -127,7 +131,7 @@ def main(args):
 
             # check if private message
             if message.channel.type == discord.ChannelType.private:
-                if args.debug:
+                if debug:
                     print('[DEBUG] Received a private message')
                 # send PM to the author
                 await message.author.send('👀 I see you 👍')
