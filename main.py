@@ -21,10 +21,12 @@ import discord
 
 def main(args):
 
+    print('[DEBUG] Main called')
+    print('[DEBUG] All arguments passed to script:')
+    pprint(args)
+
     if args.debug:
-        print('[DEBUG] Main called')
-        print('[DEBUG] All arguments passed to script:')
-        pprint(args)
+        print('[DEBUG] Yay args.debug is True!')
 
     # create client 
     # NOTE: intents are needed to get users by id, this must be set in 
