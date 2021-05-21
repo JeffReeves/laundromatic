@@ -228,7 +228,7 @@ if __name__ == "__main__":
                                     nargs   = '+', 
                                     help    = 'User IDs for Watchers (space separated list)')
 
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     if 'token' not in args:
         args['token'] = token
