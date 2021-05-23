@@ -56,10 +56,11 @@ These items can be provided in three ways.
 
 You only need to use ***__ONE__*** of these methods, but you can mix-and-match if you'd like.
 
-1. Rename the `config.example.json` file to `config.json`, and then add your token and user ID values to it:
+1. Copy the `config.example.json` file to `config.json`, and then add your token and user ID values to it:
 
     ```sh
-    mv config.example.json config.json
+    cp config.example.json config.json
+    
     vim config.json # feel free to use a different editor than vim
     ```
 
