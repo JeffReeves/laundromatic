@@ -62,10 +62,10 @@ def main(args):
     token    = args.token    or getpass('Token: ')
     watchers = args.watchers or input('Watchers (space separated user IDs):').split()
     prefix   = args.prefix   or '!' 
-    loglevel = args.loglevel or 'INFO' 
+    loglevel = args.loglevel or logging.INFO
 
     # set log level
-    logger.setLevel(logging[loglevel])
+    logger.setLevel(loglevel)
 
     if debug:
         logger.debug('Main called')
