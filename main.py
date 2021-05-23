@@ -78,7 +78,7 @@ def main(args):
     client          = commands.Bot(command_prefix = prefix, 
                                    intents = intents)
 
-    @client.command(name = 'watch', aliases = ['watch', 'subscribe'])
+    @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *args):
         await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
