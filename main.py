@@ -154,9 +154,13 @@ def main(args):
             # if message.content.startswith(prefix + 'stop'):
             #     await message.channel.send('Hello!')
 
+            # check if in '#laundromatic' channel
+            if message.channel.id == 'laundromatic':
+                logger.debug('Message received in #laundromatic channel')
+
             # check if private message
             if message.channel.type == discord.ChannelType.private:
-                logger.debug(f'Received a private message')
+                logger.debug('Received a private message')
 
                 # send PM to the author
                 await message.author.send('👀 I see you 👍')
