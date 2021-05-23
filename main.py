@@ -163,6 +163,9 @@ def main(args):
                 #user = await get_user_by_id(message.author.id)
                 #await send_dm(user, message = '👀 I see you 👍')
 
+            # call commands
+            await client.process_commands(message)
+
     if token:
         client.run(token)
     else:
