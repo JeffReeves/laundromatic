@@ -144,6 +144,7 @@ def main(args):
             logger.debug(f'message.author.id: {message.author.id}')
             logger.debug(f'client.user: {client.user}')
             logger.debug(f'message.channel: {message.channel}')
+            logger.debug(f'message.channel.name: {message.channel.name}')
             logger.debug(f'message.channel.type: {message.channel.type}')
             logger.debug(f'message: {message}')
 
@@ -155,7 +156,8 @@ def main(args):
             #     await message.channel.send('Hello!')
 
             # check if in '#laundromatic' channel
-            if message.channel == 'laundromatic':
+            logger.debug(f'Message received in {message.channel} channel')
+            if message.channel.name == 'laundromatic':
                 logger.debug('Message received in #laundromatic channel')
 
             # check if private message
