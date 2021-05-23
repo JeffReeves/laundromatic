@@ -292,4 +292,7 @@ if __name__ == "__main__":
     if 'loglevel' not in args:
         args.loglevel  = loglevel
 
+    if 'debug' not in args:
+        args.debug     = True
+
     main(args)
