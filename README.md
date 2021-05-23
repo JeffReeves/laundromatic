@@ -72,7 +72,8 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
         "watchers": [
             "your-user-id-here"
         ],
-        "prefix": "!"
+        "prefix": "!",
+        "loglevel": "INFO"
     }
     ```
 
@@ -86,7 +87,8 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
             "additional-user-id-here",
             "as-many-as-you-want"
         ],
-        "prefix": "!"
+        "prefix": "!",
+        "loglevel": "INFO"
     }
     ```
 
@@ -112,16 +114,21 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     The command line supports the following arguments when running the script:
     
     ```txt
-    [-h] [-d] (-t TOKEN | -b TOKEN) (-w WATCHERS | --watchers WATCHERS [WATCHERS ...])
+    [-h]
+    [-l LOGLEVEL | --loglevel LOGLEVEL] 
+    (-t TOKEN | -b TOKEN) 
+    (-w WATCHER | --watcher WATCHER | --watchers WATCHERS [WATCHERS ...])
 
-    -h, --help            show this help message and exit
-    -d, --debug           Debug Mode
+    -h, --help              
+                            show this help message and exit
+    -l, --loglevel          
+                            Logging Level (debug | info | warning | error | critical)
     -t TOKEN, --token TOKEN
                             Token
     -b TOKEN, --base64_token TOKEN
                             Token (base64)
-    -w WATCHERS, --watcher WATCHERS
-                            User ID of Watcher (can be used multiple times)
+    -w WATCHER, --watcher WATCHER
+                            User ID of Watcher (can be used multiple times) 
     --watchers WATCHERS [WATCHERS ...]
                             User IDs for Watchers (space separated list)
     ```
@@ -129,7 +136,7 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     An example of running the script:
 
     ```sh
-    ./main.py --debug --token 'my-token-goes-here' --watcher 'my-user-id' --watcher 'some-other-user-id'
+    ./main.py --loglevel 'debug' --token 'my-token-goes-here' --watcher 'my-user-id' --watcher 'some-other-user-id'
     ```
 
     A few more examples of using command line arguments:
@@ -137,9 +144,9 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     ```sh
     ./main.py --base64_token 'base64-encoded-token' --watchers 'my-user-id some-other-user-id'
 
-    ./main.py --token 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'--debug
+    ./main.py --token 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'--loglevel 'debug'
 
-    ./main.py -d -t 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'
+    ./main.py -l 'debug' -t 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'
     ```
 
 
@@ -149,6 +156,7 @@ Things I'd like to get around to, eventually...
 
 0. ~~Write instructions for setup and use.~~
 1. ~~Possibly add config file parsing.~~
-2. Add tests to verify code works as expected with changes.
-3. Modularize the code into parts for easier maintenance.
-4. Containerize code and put into image repo.
+2. ~~Add logging.~~
+3. Add tests to verify code works as expected with changes.
+4. Modularize the code into parts for easier maintenance.
+5. Containerize code and put into image repo.
