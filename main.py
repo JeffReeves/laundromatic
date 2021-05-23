@@ -81,6 +81,7 @@ def main(args):
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *args):
         logger.debug('called add_user_to_watchers')
+        logger.debug(f'ctx: {ctx}')
         await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
     @add_user_to_watchers.error
@@ -156,9 +157,10 @@ def main(args):
             #     await message.channel.send('Hello!')
 
             # check if in '#laundromatic' channel
-            logger.debug(f'Message received in {message.channel} channel')
             if message.channel.name == 'laundromatic':
                 logger.debug('Message received in #laundromatic channel')
+                # call commands
+                await client.process_commands(message)
 
             # check if private message
             if message.channel.type == discord.ChannelType.private:
@@ -169,8 +171,8 @@ def main(args):
                 #user = await get_user_by_id(message.author.id)
                 #await send_dm(user, message = '👀 I see you 👍')
 
-            # call commands
-            await client.process_commands(message)
+                # call commands
+                await client.process_commands(message)
 
     if token:
         client.run(token)
