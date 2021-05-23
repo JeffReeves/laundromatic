@@ -10,17 +10,14 @@ author: Jeff Reeves
 # TODO:
 # - Get bot commands working
 # - Get GPIO pins working with light sensor
-# - Convert debug prints to logging
 
 
 #==[ IMPORTS ]=============================================================================================================================
 
-from pprint import pprint
 import logging
 import sys
 import os
 import traceback
-import codecs
 import json
 import base64
 import argparse
@@ -31,15 +28,18 @@ import discord
 #==[ CONFIG ]==============================================================================================================================
 
 # logging
-formatter       = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 console_handler = logging.StreamHandler(sys.stdout)
-file_handler    = logging.FileHandler('laundromatic.log')
-logger          = logging.getLogger(__name__)
-console_handler.setLevel(logging.DEBUG)
-file_handler.setLevel(logging.DEBUG)
-logger.setLevel(logging.INFO)
 console_handler.setFormatter(formatter)
+console_handler.setLevel(logging.DEBUG)
+
+file_handler = logging.FileHandler('laundromatic.log')
 file_handler.setFormatter(formatter)
+file_handler.setLevel(logging.DEBUG)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
@@ -70,39 +70,30 @@ def main(args):
 
     if debug:
         logger.debug('Main called')
-        logging.debug('All arguments passed to script:')
-        logging.debug(args)
-        # print('[DEBUG] Main called')
-        # print('[DEBUG] All arguments passed to script:')
-        # pprint(args)
-        print('[DEBUG] token:')
-        print(token)
-        print('[DEBUG] watchers:')
-        pprint(watchers)
-        print('[DEBUG] prefix:')
-        print(prefix)
-        print('[DEBUG] loglevel:')
-        print(loglevel)
+        logger.debug('All arguments passed to script:')
+        logger.debug(args)
+        logger.debug(f'token: {token}')
+        logger.debug(f'watchers: {watchers}')
+        logger.debug(f'prefix: {prefix}')
+        logger.debug(f'loglevel: {loglevel}')
 
     # get user by ID
     async def get_user_by_id(watcher):
-        if debug:
-            print('[DEBUG] watcher:')
-            print(watcher)
+        logger.debug(f'watcher: {watcher}')
         user = await client.fetch_user(watcher)
-        if debug:
-            print('[DEBUG] user:')
-            print(user)
+        logger.debug(f'user: {user}')
         return user
 
     # send DM
     async def send_dm(user, message = 'Sending you a message'):
+        logger.debug(f'Sending DM to: {user}')
+        logger.debug(f'Message: {message}')
         await user.send(message)
 
     # READY
     @client.event
     async def on_ready():
-        print('[INFO] Bot {0.user} is ready'.format(client))
+        logger.info(f'Bot {client.user} is ready')
         for index, watcher in enumerate(watchers):
             user = await get_user_by_id(watcher)
             if user:
@@ -111,23 +102,18 @@ def main(args):
     # DISCONNECT
     @client.event
     async def on_disconnect():
-        print('[WARN] Disconnected from Discord')
+        logger.warning('Disconnected from Discord')
 
     # ERROR
     @client.event
     async def on_error(event, *args, **kwargs):
         message = args[0] #Gets the message object
-        if debug:
-            print('[DEBUG] message:')
-            print(message)
-        print(traceback.format_exc())
-        #logging.warning(traceback.format_exc()) #logs the error
+        logger.error(f'Error Message: {message}')
+        logger.error(traceback.format_exc())
         for watcher in enumerate(watchers):
             user = await get_user_by_id(watcher)
             if user:
-                if debug:
-                    print('[DEBUG] user:')
-                    print(user)
+                logger.debug(f'User: {user}')
                 await send_dm(user, 'Encountered an error...')
 
     # MESSAGE
@@ -142,27 +128,21 @@ def main(args):
         if message.content.startswith(prefix):
 
             # debugging
-            if debug:
-                print('[DEBUG] message:')
-                print(message)
-                print('[DEBUG] message.author.id:')
-                print(message.author.id)
-                print('[DEBUG] client:')
-                print(client)
-                print('[DEBUG] client.user:')
-                print(client.user)
-                print('[DEBUG] message.channel:')
-                print(message.channel)
-                print('[DEBUG] message.channel.type:')
-                print(message.channel.type)
+            logger.debug(f'message: {message}')
+            logger.debug(f'message.author.id: {message.author.id}')
+            logger.debug(f'client: {client}')
+            logger.debug(f'client.user: {client.user}')
+            logger.debug(f'message.channel: {message.channel}')
+            logger.debug(f'message.channel.type: {message.channel.type}')
+            logger.debug(f'message: {message}')
 
             # send a message back to the channel
             await message.channel.send('Hello!')
 
             # check if private message
             if message.channel.type == discord.ChannelType.private:
-                if debug:
-                    print('[DEBUG] Received a private message')
+                logger.debug(f'Received a private message')
+
                 # send PM to the author
                 await message.author.send('👀 I see you 👍')
                 #user = await get_user_by_id(message.author.id)
@@ -171,9 +151,7 @@ def main(args):
     if token:
         client.run(token)
     else:
-        print('[ERROR] No token provided')
-        print('[HELP] Set DISCORD_TOKEN variable and run again')
-        print('[EXAMPLE] export DISCORD_TOKEN=\'mycooltoken\'')
+        logger.error('No token provided')
 
     return
 
