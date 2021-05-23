@@ -78,7 +78,7 @@ def main(args):
     client          = commands.Bot(command_prefix = prefix, 
                                    intents = intents)
 
-    @client.command(name = 'watch')
+    @client.command(name = 'watch', aliases = ['watch', 'subscribe'])
     async def add_user_to_watchers(ctx, *args):
         await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
@@ -145,12 +145,12 @@ def main(args):
             logger.debug(f'message.channel.type: {message.channel.type}')
             logger.debug(f'message: {message}')
 
-            # general commands
-            if message.content.startswith(prefix + 'watch'):
-                await message.channel.send('Adding you to watch')
+            # # general commands
+            # if message.content.startswith(prefix + 'watch'):
+            #     await message.channel.send('Adding you to watch')
             
-            if message.content.startswith(prefix + 'stop'):
-                await message.channel.send('Hello!')
+            # if message.content.startswith(prefix + 'stop'):
+            #     await message.channel.send('Hello!')
 
             # check if private message
             if message.channel.type == discord.ChannelType.private:
