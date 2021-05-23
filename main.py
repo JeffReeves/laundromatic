@@ -81,12 +81,14 @@ def main(args):
 
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *args):
-        logger.debug(f'ctx.guild: {pprint(ctx.guild)}')
-        logger.debug(f'ctx.author: {pprint(ctx.author)}')
-        logger.debug(f'ctx.message: {pprint(ctx.message)}')
+        logger.debug(f'pp ctx.guild: {pprint(ctx.guild)}')
+        logger.debug(f'pp ctx.author: {pprint(ctx.author)}')
+        logger.debug(f'pp ctx.message: {pprint(ctx.message)}')
         logger.debug(f'ctx.guild: {ctx.guild}')
         logger.debug(f'ctx.author: {ctx.author}')
+        logger.debug(f'ctx.author.id: {ctx.author.id}')
         logger.debug(f'ctx.message: {ctx.message}')
+        logger.debug(f'ctx.message.author.id: {ctx.message.author.id}')
         await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
     @add_user_to_watchers.error
