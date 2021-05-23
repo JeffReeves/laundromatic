@@ -38,7 +38,7 @@ import discord
 formatter   = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler     = logging.FileHandler('laundromatic.log')
 logger      = logging.getLogger(__name__)
-handler.formatter(formatter)
+handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
