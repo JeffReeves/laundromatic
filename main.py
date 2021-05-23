@@ -23,6 +23,7 @@ import base64
 import argparse
 import getpass
 import discord
+from discord.ext import commands
 
 
 #==[ CONFIG ]==============================================================================================================================
@@ -42,15 +43,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
-
-# discord client 
-# NOTE: intents are needed to get users by id, this must be set in 
-#   the Discord Dev Center:
-#       https://discord.com/developers/applications/ -> 
-#       Application -> Bot -> SERVER MEMBERS INTENT (ON)
-intents         = discord.Intents.default()
-intents.members = True
-client          = discord.Client(intents = intents)
 
 
 #==[ MAIN ]================================================================================================================================
@@ -75,6 +67,26 @@ def main(args):
         logger.debug(f'prefix: {prefix}')
         logger.debug(f'loglevel: {loglevel}')
 
+    # discord client 
+    # NOTE: intents are needed to get users by id, this must be set in 
+    #   the Discord Dev Center:
+    #       https://discord.com/developers/applications/ -> 
+    #       Application -> Bot -> SERVER MEMBERS INTENT (ON)
+    intents         = discord.Intents.default()
+    intents.members = True
+    #client          = discord.Client(intents = intents)
+    client          = commands.Bot(command_prefix = prefix, 
+                                   intents = intents)
+
+    @client.command(name = 'watch')
+    async def add_user_to_watchers(ctx, *args):
+        await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
+
+    @add_user_to_watchers.error
+    async def add_user_to_watchers_error(ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.send('Invalid user ID(s)')
+        
     # get user by ID
     async def get_user_by_id(watcher):
         logger.debug(f'watcher: {watcher}')
@@ -133,8 +145,12 @@ def main(args):
             logger.debug(f'message.channel.type: {message.channel.type}')
             logger.debug(f'message: {message}')
 
-            # send a message back to the channel
-            await message.channel.send('Hello!')
+            # general commands
+            if message.content.startswith(prefix + 'watch'):
+                await message.channel.send('Adding you to watch')
+            
+            if message.content.startswith(prefix + 'stop'):
+                await message.channel.send('Hello!')
 
             # check if private message
             if message.channel.type == discord.ChannelType.private:
