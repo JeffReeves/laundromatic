@@ -232,12 +232,27 @@ if __name__ == "__main__":
     # 3. arguments on command line
     parser = argparse.ArgumentParser()
 
+    loglevels = {
+        'debug'     : logging.DEBUG,
+        'info'      : logging.INFO,
+        'warning'   : logging.WARNING,
+        'error'     : logging.ERROR,
+        'critical'  : logging.CRITICAL,
+    }
+
+    # custom type for argparse
+    def set_log_level(level):
+        if level is None:
+            level = 'info'
+        if level not in loglevels:
+            raise ValueError(f"Log Level must be one of: {' | '.join(loglevels.keys())}")
+        return loglevels[level]
+
     parser.add_argument('-l',
                         '--loglevel',
                         dest    = 'loglevel',
-                        type    = str.upper,
-                        default = 'INFO',
-                        help    = "Logging Level ('DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL')")
+                        type    = set_log_level,
+                        help    = f"Logging Level ({' | '.join(loglevels.keys())})")
 
     if not prefix:
 
