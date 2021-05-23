@@ -207,9 +207,10 @@ if __name__ == "__main__":
 
         parser.add_argument('-p', 
                             '--prefix', 
-                            dest    = 'prefix',
-                            type    = str,
-                            help    = 'Prefix for commands')
+                            dest        = 'prefix',
+                            type        = str,
+                            required    = False,
+                            help        = 'Prefix for commands')
 
     if not token:
 
