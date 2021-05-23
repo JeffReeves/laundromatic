@@ -155,7 +155,7 @@ def main(args):
             #     await message.channel.send('Hello!')
 
             # check if in '#laundromatic' channel
-            if message.channel.id == 'laundromatic':
+            if message.channel == 'laundromatic':
                 logger.debug('Message received in #laundromatic channel')
 
             # check if private message
