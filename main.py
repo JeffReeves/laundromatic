@@ -7,6 +7,12 @@ purpose: Discord Bot that sends laundry status messages.
 author: Jeff Reeves
 """
 
+# TODO:
+# - Get bot commands working
+# - Get GPIO pins working with light sensor
+# - Convert debug prints to logging
+
+
 #==[ IMPORTS ]=============================================================================================================================
 
 from pprint import pprint
@@ -23,23 +29,23 @@ import discord
 
 def main(args):
 
-    # debugging flag
-    debug = args.debug or False
+    # config
+    # use arguments if available, else get from user input
+    debug    = args.debug    or False
+    token    = args.token    or getpass('Token: ')
+    watchers = args.watchers or input('Watchers (space separated user IDs):').split()
+    prefix   = args.prefix   or '!' 
 
     if debug:
         print('[DEBUG] Main called')
         print('[DEBUG] All arguments passed to script:')
         pprint(args)
-
-    # use arguments if available, else get from user input
-    token    = args.token    or getpass('Token: ')
-    watchers = args.watchers or input('Watchers (space separated user IDs):').split()
-
-    if debug:
         print('[DEBUG] token:')
         print(token)
         print('[DEBUG] watchers:')
         pprint(watchers)
+        print('[DEBUG] prefix:')
+        print(prefix)
 
     # create client 
     # NOTE: intents are needed to get users by id, this must be set in 
@@ -49,9 +55,6 @@ def main(args):
     intents         = discord.Intents.default()
     intents.members = True
     client          = discord.Client(intents = intents)
-
-    # config 
-    prefix   = '!'
 
     # get user by ID
     async def get_user_by_id(watcher):
@@ -151,6 +154,7 @@ if __name__ == "__main__":
     # these important values must be set
     token    = None
     watchers = []
+    prefix   = None
 
     # the values get set from (in order):
     #   1. JSON config file
@@ -170,6 +174,9 @@ if __name__ == "__main__":
             if all(config['watchers']):
                 watchers = config['watchers']
 
+            if config['prefix']:
+                prefix = config['prefix']
+
 
     # 2. environment variables
     if not token:
@@ -180,6 +187,9 @@ if __name__ == "__main__":
         if watchers:
             watchers = watchers.split() # convert space separated string to list
 
+    if not prefix:
+        prefix   = os.environ.get('DISCORD_PREFIX')
+
 
     # 3. arguments on command line
     parser = argparse.ArgumentParser()
@@ -189,6 +199,14 @@ if __name__ == "__main__":
                         dest    = 'debug',
                         action  = 'store_true', 
                         help    = 'Debug Mode')
+
+    if not prefix:
+
+        parser.add_argument('-p', 
+                            '--prefix', 
+                            dest    = 'prefix',
+                            type    = str,
+                            help    = 'Prefix for commands')
 
     if not token:
 
@@ -230,9 +248,12 @@ if __name__ == "__main__":
     args, unknown = parser.parse_known_args()
 
     if 'token' not in args:
-        args.token = token
+        args.token      = token
 
     if 'watchers' not in args:
-        args.watchers = watchers
+        args.watchers   = watchers
+
+    if 'prefix' not in args:
+        args.prefix     = prefix
 
     main(args)
