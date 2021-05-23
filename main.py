@@ -80,10 +80,12 @@ def main(args):
 
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *args):
+        logger.debug('called add_user_to_watchers')
         await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
     @add_user_to_watchers.error
     async def add_user_to_watchers_error(ctx, error):
+        logger.error(f'{error}')
         if isinstance(error, commands.BadArgument):
             await ctx.send('Invalid user ID(s)')
         
