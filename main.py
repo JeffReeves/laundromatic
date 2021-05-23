@@ -59,7 +59,7 @@ def main(args):
     loglevel = args.loglevel or 'INFO' 
 
     # set log level
-    logging.setLevel(loglevel)
+    logging.setLevel(logging[loglevel])
 
     if debug:
         logging.debug('Main called')
@@ -229,7 +229,7 @@ if __name__ == "__main__":
     parser.add_argument('-l',
                         '--loglevel',
                         dest    = 'loglevel',
-                        type    = 'logging.' + str.upper,
+                        type    = str.upper,
                         default = 'INFO',
                         help    = "Logging Level ('DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL')")
 
