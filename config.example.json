@@ -3,5 +3,6 @@
     "watchers": [
         null,
         null
-    ]
+    ],
+    "prefix": "!"
 }

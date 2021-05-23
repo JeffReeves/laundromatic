@@ -56,10 +56,10 @@ These items can be provided in three ways.
 
 You only need to use ***__ONE__*** of these methods, but you can mix-and-match if you'd like.
 
-1. Rename the `config.json.example` file to `config.json`, and then add your token and user ID values to it:
+1. Rename the `config.example.json` file to `config.json`, and then add your token and user ID values to it:
 
     ```sh
-    mv config.json.example config.json
+    mv config.example.json config.json
     vim config.json # feel free to use a different editor than vim
     ```
 
@@ -70,7 +70,8 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
         "token": "your-bot-token-here",
         "watchers": [
             "your-user-id-here"
-        ]
+        ],
+        "prefix": "!"
     }
     ```
 
@@ -83,7 +84,8 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
             "your-user-id-here",
             "additional-user-id-here",
             "as-many-as-you-want"
-        ]
+        ],
+        "prefix": "!"
     }
     ```
 
