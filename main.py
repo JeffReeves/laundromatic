@@ -30,7 +30,7 @@ from discord.ext import commands
 #==[ CONFIG ]==============================================================================================================================
 
 # logging
-formatter = logging.Formatter('[ %(asctime)-23s ][ %(name)-8s ][ %(levelname)-8s ][ %(funcName)s ] (%(filename)s:%(lineno)s)\n%(message)s')
+formatter = logging.Formatter('[ %(asctime)-23s ][ %(name)-8s ][ %(levelname)-8s ][ %(funcName)s ] (%(filename)s:%(lineno)s) - %(message)s')
 
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
@@ -175,6 +175,8 @@ def main(args):
                 await client.process_commands(message)
 
             else:
+                logger.debug(f'message.channel.name: {message.channel.name}')
+
                 # check if in '#laundromatic' channel
                 if message.channel.name == 'laundromatic':
                     logger.debug('Message received in #laundromatic channel')
