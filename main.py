@@ -162,12 +162,6 @@ def main(args):
             # if message.content.startswith(prefix + 'stop'):
             #     await message.channel.send('Hello!')
 
-            # check if in '#laundromatic' channel
-            if message.channel.name == 'laundromatic':
-                logger.debug('Message received in #laundromatic channel')
-                # call commands
-                await client.process_commands(message)
-
             # check if private message
             if message.channel.type == discord.ChannelType.private:
                 logger.debug('Received a private message')
@@ -179,6 +173,15 @@ def main(args):
 
                 # call commands
                 await client.process_commands(message)
+
+            else:
+                # check if in '#laundromatic' channel
+                if message.channel.name == 'laundromatic':
+                    logger.debug('Message received in #laundromatic channel')
+                    # call commands
+                    await client.process_commands(message)
+
+
 
     if token:
         client.run(token)
