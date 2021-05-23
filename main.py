@@ -75,7 +75,7 @@ def main(args):
     @client.event
     async def on_ready():
         print('[INFO] Bot {0.user} is ready'.format(client))
-        for watcher in enumerate(watchers):
+        for index, watcher in enumerate(watchers):
             user = await get_user_by_id(watcher)
             if user:
                 await send_dm(user)
