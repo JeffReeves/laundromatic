@@ -4,5 +4,6 @@
         null,
         null
     ],
-    "prefix": "!"
+    "prefix": "!",
+    "loglevel": "INFO"
 }

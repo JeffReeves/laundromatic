@@ -16,13 +16,34 @@ author: Jeff Reeves
 #==[ IMPORTS ]=============================================================================================================================
 
 from pprint import pprint
+import logging
 import os
 import traceback
+import codecs
 import json
 import base64
 import argparse
 import getpass
 import discord
+
+
+#==[ CONFIG ]==============================================================================================================================
+
+# logging
+logging.getLogger(__name__)
+logging.basicConfig(filename    = 'laundromatic.log',
+                    filemode    = 'a',
+                    format      = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level       = logging.INFO)
+
+# discord client 
+# NOTE: intents are needed to get users by id, this must be set in 
+#   the Discord Dev Center:
+#       https://discord.com/developers/applications/ -> 
+#       Application -> Bot -> SERVER MEMBERS INTENT (ON)
+intents         = discord.Intents.default()
+intents.members = True
+client          = discord.Client(intents = intents)
 
 
 #==[ MAIN ]================================================================================================================================
@@ -35,26 +56,26 @@ def main(args):
     token    = args.token    or getpass('Token: ')
     watchers = args.watchers or input('Watchers (space separated user IDs):').split()
     prefix   = args.prefix   or '!' 
+    loglevel = args.loglevel or 'INFO' 
+
+    # set log level
+    logging.setLevel(loglevel)
 
     if debug:
-        print('[DEBUG] Main called')
-        print('[DEBUG] All arguments passed to script:')
-        pprint(args)
+        logging.debug('Main called')
+        logging.debug('All arguments passed to script:')
+        logging.debug(args)
+        # print('[DEBUG] Main called')
+        # print('[DEBUG] All arguments passed to script:')
+        # pprint(args)
         print('[DEBUG] token:')
         print(token)
         print('[DEBUG] watchers:')
         pprint(watchers)
         print('[DEBUG] prefix:')
         print(prefix)
-
-    # create client 
-    # NOTE: intents are needed to get users by id, this must be set in 
-    #   the Discord Dev Center:
-    #       https://discord.com/developers/applications/ -> 
-    #       Application -> Bot -> SERVER MEMBERS INTENT (ON)
-    intents         = discord.Intents.default()
-    intents.members = True
-    client          = discord.Client(intents = intents)
+        print('[DEBUG] loglevel:')
+        print(loglevel)
 
     # get user by ID
     async def get_user_by_id(watcher):
@@ -158,6 +179,7 @@ if __name__ == "__main__":
     token    = None
     watchers = []
     prefix   = None
+    loglevel = None
 
     # the values get set from (in order):
     #   1. JSON config file
@@ -180,6 +202,9 @@ if __name__ == "__main__":
             if config['prefix']:
                 prefix = config['prefix']
 
+            if config['loglevel']:
+                loglevel = config['loglevel']
+
 
     # 2. environment variables
     if not token:
@@ -193,15 +218,19 @@ if __name__ == "__main__":
     if not prefix:
         prefix   = os.environ.get('DISCORD_PREFIX')
 
+    if not loglevel:
+        loglevel = os.environ.get('DISCORD_LOGLEVEL')
+
 
     # 3. arguments on command line
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('-d', 
-                        '--debug', 
-                        dest    = 'debug',
-                        action  = 'store_true', 
-                        help    = 'Debug Mode')
+    parser.add_argument('-l',
+                        '--loglevel',
+                        dest    = 'loglevel',
+                        type    = 'logging.' + str.upper,
+                        default = 'INFO',
+                        help    = "Logging Level ('DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL')")
 
     if not prefix:
 
@@ -209,7 +238,6 @@ if __name__ == "__main__":
                             '--prefix', 
                             dest        = 'prefix',
                             type        = str,
-                            required    = False,
                             help        = 'Prefix for commands')
 
     if not token:
@@ -259,5 +287,8 @@ if __name__ == "__main__":
 
     if 'prefix' not in args:
         args.prefix     = prefix
+
+    if 'loglevel' not in args:
+        args.loglevel  = loglevel
 
     main(args)
