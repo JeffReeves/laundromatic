@@ -17,6 +17,7 @@ author: Jeff Reeves
 
 from pprint import pprint
 import logging
+import sys
 import os
 import traceback
 import codecs
@@ -31,7 +32,7 @@ import discord
 
 # logging
 formatter       = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console_handler = logging.StreamHandler()
+console_handler = logging.StreamHandler(sys.stdout)
 file_handler    = logging.FileHandler('laundromatic.log')
 logger          = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
