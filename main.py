@@ -30,11 +30,17 @@ import discord
 #==[ CONFIG ]==============================================================================================================================
 
 # logging
-logging.getLogger(__name__)
-logging.basicConfig(filename    = 'laundromatic.log',
-                    filemode    = 'a',
-                    format      = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level       = logging.INFO)
+# logging.getLogger(__name__)
+# logging.basicConfig(filename    = 'laundromatic.log',
+#                     filemode    = 'a',
+#                     format      = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#                     level       = logging.INFO)
+formatter   = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler     = logging.FileHandler('laundromatic.log')
+logger      = logging.getLogger(__name__)
+handler.formatter(formatter)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 # discord client 
 # NOTE: intents are needed to get users by id, this must be set in 
@@ -59,10 +65,10 @@ def main(args):
     loglevel = args.loglevel or 'INFO' 
 
     # set log level
-    logging.setLevel(logging[loglevel])
+    logger.setLevel(logging[loglevel])
 
     if debug:
-        logging.debug('Main called')
+        logger.debug('Main called')
         logging.debug('All arguments passed to script:')
         logging.debug(args)
         # print('[DEBUG] Main called')
