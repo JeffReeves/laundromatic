@@ -109,13 +109,18 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     The command line supports the following arguments when running the script:
     
     ```txt
-    ARGUMENT            HELP
-    --------            ----
-    -d, --debug         Debug Mode
-    -t, --token         Token
-    -b, --base64_token  Token (base64)
-    -w, --watcher       User ID of Watcher (can be used multiple times)
-    --watchers          User IDs for Watchers (space separated list)
+    [-h] [-d] (-t TOKEN | -b TOKEN) (-w WATCHERS | --watchers WATCHERS [WATCHERS ...])
+
+    -h, --help            show this help message and exit
+    -d, --debug           Debug Mode
+    -t TOKEN, --token TOKEN
+                            Token
+    -b TOKEN, --base64_token TOKEN
+                            Token (base64)
+    -w WATCHERS, --watcher WATCHERS
+                            User ID of Watcher (can be used multiple times)
+    --watchers WATCHERS [WATCHERS ...]
+                            User IDs for Watchers (space separated list)
     ```
 
     An example of running the script:
@@ -128,6 +133,10 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     ```sh
     ./main.py --base64_token 'base64-encoded-token' --watchers 'my-user-id some-other-user-id'
+
+    ./main.py --token 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'--debug
+
+    ./main.py -d -t 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'
     ```
 
 
