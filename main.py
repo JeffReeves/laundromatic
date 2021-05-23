@@ -193,16 +193,17 @@ if __name__ == "__main__":
         with open(config_file) as json_config_file:
             config = json.load(json_config_file)
 
-            if config['token']:
+            if 'token' in config:
                 token = config['token']
 
-            if all(config['watchers']):
-                watchers = config['watchers']
+            if 'watchers' in config:
+                if all(config['watchers']):
+                    watchers = config['watchers']
 
-            if config['prefix']:
+            if 'prefix' in config:
                 prefix = config['prefix']
 
-            if config['loglevel']:
+            if 'loglevel' in config:
                 loglevel = config['loglevel']
 
 
