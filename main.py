@@ -30,17 +30,17 @@ import discord
 #==[ CONFIG ]==============================================================================================================================
 
 # logging
-# logging.getLogger(__name__)
-# logging.basicConfig(filename    = 'laundromatic.log',
-#                     filemode    = 'a',
-#                     format      = '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#                     level       = logging.INFO)
-formatter   = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler     = logging.FileHandler('laundromatic.log')
-logger      = logging.getLogger(__name__)
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+formatter       = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler = logging.StreamHandler()
+file_handler    = logging.FileHandler('laundromatic.log')
+logger          = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+console_handler.setLevel(logging.INFO)
+file_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+file_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
 
 # discord client 
 # NOTE: intents are needed to get users by id, this must be set in 
