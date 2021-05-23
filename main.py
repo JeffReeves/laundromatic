@@ -128,7 +128,7 @@ def main(args):
         message = args[0] #Gets the message object
         logger.error(f'Error Message: {message}')
         logger.error(traceback.format_exc())
-        for watcher in enumerate(watchers):
+        for index, watcher in enumerate(watchers):
             user = await get_user_by_id(watcher)
             if user:
                 logger.debug(f'User: {user}')
