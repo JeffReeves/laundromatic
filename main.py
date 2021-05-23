@@ -14,6 +14,7 @@ author: Jeff Reeves
 
 #==[ IMPORTS ]=============================================================================================================================
 
+from pprint import pprint
 import logging
 import sys
 import os
@@ -81,7 +82,7 @@ def main(args):
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *args):
         logger.debug('called add_user_to_watchers')
-        logger.debug(f'ctx: {ctx}')
+        logger.debug(f'ctx: {pprint(ctx)}')
         await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
 
     @add_user_to_watchers.error
