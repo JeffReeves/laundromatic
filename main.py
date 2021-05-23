@@ -58,6 +58,9 @@ def main(args):
 
     # get user by ID
     async def get_user_by_id(watcher):
+        if debug:
+            print('[DEBUG] watcher:')
+            print(watcher)
         user = await client.fetch_user(watcher)
         if debug:
             print('[DEBUG] user:')
