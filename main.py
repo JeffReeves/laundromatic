@@ -28,7 +28,7 @@ import discord
 #==[ CONFIG ]==============================================================================================================================
 
 # logging
-formatter = logging.Formatter('[ %(asctime)s ][ %(name)s ][ %(levelname)s ][ %(funcName)s ]\n%(message)s (%(filename)s:%(lineno)s)')
+formatter = logging.Formatter('[ %(asctime)-23s ][ %(name)-8s ][ %(levelname)-8s ][ %(funcName)s ] (%(filename)s:%(lineno)s)\n%(message)s')
 
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
@@ -69,8 +69,7 @@ def main(args):
     logger.setLevel(loglevel)
 
     if debug:
-        logger.debug('All arguments passed to script:')
-        logger.debug(args)
+        logger.debug(f'All arguments passed to script: {args}')
         logger.debug(f'token: {token}')
         logger.debug(f'watchers: {watchers}')
         logger.debug(f'prefix: {prefix}')
