@@ -28,7 +28,7 @@ import discord
 #==[ CONFIG ]==============================================================================================================================
 
 # logging
-formatter = logging.Formatter('[ %(asctime)s ] [ %(name)s ] [ %(levelname)s ] [ %(funcName)s ]\n%(message)s')
+formatter = logging.Formatter('[ %(asctime)s ][ %(name)s ][ %(levelname)s ][ %(funcName)s ]\n%(message)s (%(filename)s:%(lineno)s)')
 
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(formatter)
@@ -71,22 +71,22 @@ def main(args):
     if debug:
         logger.debug('All arguments passed to script:')
         logger.debug(args)
-        logger.debug(f'token:\n{token}')
-        logger.debug(f'watchers:\n{watchers}')
-        logger.debug(f'prefix:\n{prefix}')
-        logger.debug(f'loglevel:\n{loglevel}')
+        logger.debug(f'token: {token}')
+        logger.debug(f'watchers: {watchers}')
+        logger.debug(f'prefix: {prefix}')
+        logger.debug(f'loglevel: {loglevel}')
 
     # get user by ID
     async def get_user_by_id(watcher):
-        logger.debug(f'watcher:\n{watcher}')
+        logger.debug(f'watcher: {watcher}')
         user = await client.fetch_user(watcher)
-        logger.debug(f'user:\n{user}')
+        logger.debug(f'user: {user}')
         return user
 
     # send DM
     async def send_dm(user, message = 'Sending you a message'):
-        logger.debug(f'Sending DM to:\n{user}')
-        logger.debug(f'Message:\n{message}')
+        logger.debug(f'Sending DM to: {user}')
+        logger.debug(f'Message: {message}')
         await user.send(message)
 
     # READY
@@ -112,7 +112,7 @@ def main(args):
         for watcher in enumerate(watchers):
             user = await get_user_by_id(watcher)
             if user:
-                logger.debug(f'User:\n{user}')
+                logger.debug(f'User: {user}')
                 await send_dm(user, 'Encountered an error...')
 
     # MESSAGE
@@ -127,12 +127,12 @@ def main(args):
         if message.content.startswith(prefix):
 
             # debugging
-            logger.debug(f'message:\n{message}')
-            logger.debug(f'message.author.id:\n{message.author.id}')
-            logger.debug(f'client.user:\n{client.user}')
-            logger.debug(f'message.channel:\n{message.channel}')
-            logger.debug(f'message.channel.type:\n{message.channel.type}')
-            logger.debug(f'message:\n{message}')
+            logger.debug(f'message: {message}')
+            logger.debug(f'message.author.id: {message.author.id}')
+            logger.debug(f'client.user: {client.user}')
+            logger.debug(f'message.channel: {message.channel}')
+            logger.debug(f'message.channel.type: {message.channel.type}')
+            logger.debug(f'message: {message}')
 
             # send a message back to the channel
             await message.channel.send('Hello!')
