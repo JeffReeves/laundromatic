@@ -135,7 +135,7 @@ def main(args):
 
         if not args:
             logger.debug('No arguments passed to command')
-            logger.debug('Using author ID as argument')
+            logger.debug(f'Using author ID {ctx.author.id} as argument')
             args = [ ctx.author.id ]
 
         for index, arg in enumerate(args):
