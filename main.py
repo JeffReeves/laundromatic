@@ -112,7 +112,7 @@ def main(args):
         await user.send(message)
         return
 
-    # send message to channel (#laundromatic)
+    # send message to channel
     async def send_channel_message(name, message = 'test message'):
         channel = discord.utils.get(client.get_all_channels(), name = name)
         if channel:
@@ -157,6 +157,10 @@ def main(args):
                 user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) has been added to the users list'
                 logger.info(user_message)
+                # TODO:
+                # - if message is a DM, send message to #laundromatic channel too
+                # if message.channel.type == discord.ChannelType.private:
+                # if message.channel.name == 'laundromatic':
                 await ctx.send(user_message)
             else:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
