@@ -14,6 +14,7 @@ author: Jeff Reeves
 
 #==[ IMPORTS ]=============================================================================================================================
 
+import enum
 from pprint import pprint
 import logging
 import sys
@@ -52,21 +53,21 @@ def main(args):
 
     # config
     # use arguments if available, else get from user input
-    debug    = args.debug    or False
     token    = args.token    or getpass('Token: ')
     watchers = args.watchers or input('Watchers (space separated user IDs):').split()
+    users    = dict.fromkeys(watchers)
     prefix   = args.prefix   or '!' 
     loglevel = args.loglevel or logging.INFO
 
     # set log level
     logger.setLevel(loglevel)
 
-    if debug:
-        logger.debug(f'All arguments passed to script: {args}')
-        logger.debug(f'token: {token}')
-        logger.debug(f'watchers: {watchers}')
-        logger.debug(f'prefix: {prefix}')
-        logger.debug(f'loglevel: {loglevel}')
+    logger.debug(f'All arguments passed to script: {args}')
+    logger.debug(f'token: {token}')
+    logger.debug(f'watchers: {watchers}')
+    logger.debug(f'users: {users}')
+    logger.debug(f'prefix: {prefix}')
+    logger.debug(f'loglevel: {loglevel}')
 
     # discord client 
     # NOTE: intents are needed to get users by id, this must be set in 
@@ -77,64 +78,111 @@ def main(args):
     intents.members = True
     #client          = discord.Client(intents = intents)
     client          = commands.Bot(command_prefix = prefix, 
-                                   intents = intents)
+                                   intents        = intents)
 
+    # CUSTOM
+
+    # sets user details for all users
+    async def set_user_details(users):
+        logger.debug(f'users: {users}')
+        for index, user_id in enumerate(users):
+            logger.debug(f'user id: {user_id}')
+            if not users[user_id]:
+                user = await client.fetch_user(user_id)
+                if(user):
+                    logger.debug(f'user: {user}')            
+                    #users[user_id] = user
+                    users.update({ user_id: user })
+                else:
+                    logger.error(f'unable to acquire user by user_id: {user_id}')
+            else:
+                logger.debug(f'user already set: {user}') 
+        return
+
+    # send DM
+    async def send_dms(users, message = 'test message'):
+        if not isinstance(users, list):
+            users = [ users ]
+        for index, user in enumerate(users):
+            logger.debug(f'Sending DM to: {users}')
+            logger.debug(f'Message: {message}')
+            await user.send(message)
+        return
+
+
+    # COMMANDS
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *args):
-        logger.debug(f'pp ctx.guild: {pprint(ctx.guild)}')
-        logger.debug(f'pp ctx.author: {pprint(ctx.author)}')
-        logger.debug(f'pp ctx.message: {pprint(ctx.message)}')
+
+        # NOTE: watchers and users comes from main()
+
+        logger.debug(f'args: {args}')
+
         logger.debug(f'ctx.guild: {ctx.guild}')
         logger.debug(f'ctx.author: {ctx.author}')
         logger.debug(f'ctx.author.id: {ctx.author.id}')
         logger.debug(f'ctx.message: {ctx.message}')
         logger.debug(f'ctx.message.author.id: {ctx.message.author.id}')
-        await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
+
+        if len(args) == 0:
+            logger.debug('No arguments passed to command')
+            logger.debug('Using author ID as argument')
+            args = [ ctx.author.id ]
+
+        for index, arg in enumerate(args):
+            if arg not in users:
+                logger.info(f'User ID {arg} not in users list')
+                adding_message = f'Adding {arg} to users list'
+                adding_message += f'Current Users:\n{users}'
+                logger.info(adding_message)
+                users[arg] = None
+                await set_user_details(users)
+                await send_dms(users[arg], 
+                               message = 'You have been added to the Watchers list')
+                await ctx.send(adding_message)
+
+        #await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
+        return 
 
     @add_user_to_watchers.error
     async def add_user_to_watchers_error(ctx, error):
         logger.error(f'{error}')
         if isinstance(error, commands.BadArgument):
-            await ctx.send('Invalid user ID(s)')
-        
-    # get user by ID
-    async def get_user_by_id(watcher):
-        logger.debug(f'watcher: {watcher}')
-        user = await client.fetch_user(watcher)
-        logger.debug(f'user: {user}')
-        return user
+            await ctx.send('[ERROR] Invalid user ID(s)')
+        return
 
-    # send DM
-    async def send_dm(user, message = 'Sending you a message'):
-        logger.debug(f'Sending DM to: {user}')
-        logger.debug(f'Message: {message}')
-        await user.send(message)
 
     # READY
     @client.event
     async def on_ready():
-        logger.info(f'Bot {client.user} is ready')
-        for index, watcher in enumerate(watchers):
-            user = await get_user_by_id(watcher)
-            if user:
-                await send_dm(user)
+        logger.info(f'Bot {client.user} is online')
+
+        # get users by user ids
+        await set_user_details(users)
+
+        # send a DM to each user that the bot is online
+        await send_dms(users, message = '[ONLINE] Watching your laundry')
+
+        # TODO: 
+        #   - put a message in the #laundromatic channel that the bot is online
+        return 
 
     # DISCONNECT
     @client.event
     async def on_disconnect():
         logger.warning('Disconnected from Discord')
+        return
+
 
     # ERROR
     @client.event
     async def on_error(event, *args, **kwargs):
-        message = args[0] #Gets the message object
+        message = args[0] # get the message object
         logger.error(f'Error Message: {message}')
         logger.error(traceback.format_exc())
-        for index, watcher in enumerate(watchers):
-            user = await get_user_by_id(watcher)
-            if user:
-                logger.debug(f'User: {user}')
-                await send_dm(user, 'Encountered an error...')
+        await send_dms(users, message = '[ERROR] Encountered an error')
+        return
+
 
     # MESSAGE
     @client.event
@@ -182,8 +230,6 @@ def main(args):
                     logger.debug('Message received in #laundromatic channel')
                     # call commands
                     await client.process_commands(message)
-
-
 
     if token:
         client.run(token)
@@ -328,8 +374,5 @@ if __name__ == "__main__":
 
     if 'loglevel' not in args:
         args.loglevel  = loglevel
-
-    if 'debug' not in args:
-        args.debug     = True
 
     main(args)
