@@ -118,8 +118,9 @@ def main(args):
         if channel:
             logger.debug(f'channel: {channel}')
             logger.debug(f'channel.id: {channel.id}')
-        #channel = client.get_channel(channel.id)
-        await channel.send(message)
+            #channel = client.get_channel(channel.id)
+            logger.info(f'Sending message to #{channel}: {message}')
+            await channel.send(message)
         return
 
     # COMMANDS
