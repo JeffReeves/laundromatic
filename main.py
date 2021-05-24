@@ -145,7 +145,7 @@ def main(args):
             if arg not in users:
                 logger.info(f'User ID {arg} not in users list')
                 adding_message = f'Adding {arg} to users list'
-                adding_message += f'Current Users:\n{users}'
+                adding_message += f'\nCurrent Users:\n{users}'
                 logger.info(adding_message)
                 users[arg] = None
                 await set_user_details(users)
@@ -154,10 +154,9 @@ def main(args):
                 await ctx.send(adding_message)
             else:
                 already_message = f'User {arg} is already on the users list'
-                already_message += f'Current Users:\n{users}'
+                already_message += f'\nCurrent Users:\n{users}'
                 logger.info(already_message)
-                ctx.send(already_message)
-        #await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
+                await ctx.send(already_message)
         return 
 
     @add_user_to_watchers.error
