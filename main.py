@@ -176,7 +176,7 @@ def main(args):
 
 
     # REMOVE USER
-    @client.command(name = 'stop', aliases = ['unsubscribe', 'unwatch'])
+    @client.command(name = 'stop', aliases = ['remove', 'unsubscribe', 'unwatch'])
     async def remove_user_from_watchers(ctx, *user_ids):
 
         logger.debug(f'ctx.guild: {ctx.guild}')
