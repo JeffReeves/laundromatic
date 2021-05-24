@@ -165,7 +165,7 @@ def main(args):
         for index, user_id in enumerate(users):
             current_users += f'{users[user_id].name}\n'
         current_users += f'```'
-        await ctx.send(user_message + current_users)
+        await ctx.send(current_users)
         return 
 
     @add_user_to_watchers.error
