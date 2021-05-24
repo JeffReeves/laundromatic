@@ -104,7 +104,7 @@ def main(args):
         if not isinstance(users, list):
             users = [ users ]
         for index, user_id in enumerate(users):
-            logger.debug(f'Sending DM to: {users[user_id]["name"]}')
+            logger.debug(f'Sending DM to: {user_id}')
             logger.debug(f'Message: {message}')
             await users[user_id].user.send(message)
         return
