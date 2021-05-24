@@ -142,11 +142,13 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     A few more examples of using command line arguments:
 
     ```sh
+    ./main.py # if values are already provided in config.json and/or environment variables
+
     ./main.py --base64_token 'base64-encoded-token' --watchers 'my-user-id some-other-user-id'
 
-    ./main.py --token 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'--loglevel 'debug'
+    ./main.py --token 'my-token-goes-here' --watcher 'my-user-id' --watcher 'some-other-user-id'--loglevel 'debug'
 
-    ./main.py -l 'debug' -t 'my-token-goes-here' --watchers 'my-user-id some-other-user-id'
+    ./main.py -l 'debug' -t 'my-token-goes-here' -w 'my-user-id'
     ```
 
 
