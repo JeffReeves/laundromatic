@@ -170,6 +170,8 @@ def main(args):
 
     @add_user_to_watchers.error
     async def add_user_to_watchers_error(ctx, error):
+        # Unwrapping the error cause because of how discord.py raises some of them
+        error = error.__cause__ or error
         logger.error(f'{error}')
         if isinstance(error, commands.BadArgument):
             await ctx.send('[ERROR] Invalid user ID(s)')
