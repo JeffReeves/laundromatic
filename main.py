@@ -8,7 +8,8 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Get bot commands working
+# - Get messages always sent to #laundromatic channel, even if working through DMs
+# - Make watchers an optional parameter / configuration
 # - Get GPIO pins working with light sensor
 
 
