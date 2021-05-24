@@ -214,10 +214,14 @@ def main(args):
         # TODO:
         # - roll this into a function
         logger.info(f'Current Users:\n{users}')
-        current_users = f'\nCurrent Users:\n```'
-        for index, user_id in enumerate(users):
-            current_users += f'{users[user_id].name}\n'
-        current_users += f'```'
+        if users:
+            current_users = f'\nCurrent Users:\n```'
+            for index, user_id in enumerate(users):
+                current_users += f'{users[user_id].name}\n'
+            current_users += f'```'
+        else:
+            current_users = f'No current users watching'
+            logger.info(f'No current users watching')
         await ctx.send(current_users)
         return 
 
