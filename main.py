@@ -106,7 +106,7 @@ def main(args):
         for index, user in enumerate(users):
             logger.debug(f'Sending DM to: {users}')
             logger.debug(f'Message: {message}')
-            await user.send(message)
+            await client.user.send(message)
         return
 
 
