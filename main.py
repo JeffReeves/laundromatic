@@ -132,7 +132,7 @@ def main(args):
         logger.debug(f'ctx.message: {ctx.message}')
         logger.debug(f'ctx.message.author.id: {ctx.message.author.id}')
 
-        if len(args) == 0:
+        if not args:
             logger.debug('No arguments passed to command')
             logger.debug('Using author ID as argument')
             args = [ ctx.author.id ]
