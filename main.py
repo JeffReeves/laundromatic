@@ -125,6 +125,7 @@ def main(args):
         # NOTE: watchers and users comes from main()
 
         logger.debug(f'args: {args}')
+        logger.debug(f'args length: {len(args)}')
 
         logger.debug(f'ctx.guild: {ctx.guild}')
         logger.debug(f'ctx.author: {ctx.author}')
