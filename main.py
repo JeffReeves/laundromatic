@@ -123,10 +123,6 @@ def main(args):
     async def add_user_to_watchers(ctx, *user_ids):
 
         # NOTE: watchers and users comes from main()
-
-        logger.debug(f'user_ids: {user_ids}')
-        logger.debug(f'user_ids length: {len(user_ids)}')
-
         logger.debug(f'ctx.guild: {ctx.guild}')
         logger.debug(f'ctx.author: {ctx.author}')
         logger.debug(f'ctx.author.id: {ctx.author.id}')
@@ -137,6 +133,9 @@ def main(args):
             logger.debug('No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
             user_ids = [ str(ctx.author.id) ]
+
+        logger.debug(f'user_ids: {user_ids}')
+        logger.debug(f'user_ids length: {len(user_ids)}')
 
         for index, user_id in enumerate(user_ids):
 
