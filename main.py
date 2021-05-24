@@ -113,12 +113,13 @@ def main(args):
         return
 
     # send message to channel (#laundromatic)
-    async def send_message():
-        channel = discord.utils.get(client.get_all_channels(), 
-                                    name = 'general')
+    async def send_channel_message(name):
+        channel = discord.utils.get(client.get_all_channels(), name = name)
+        logger.debug(f'channel: {channel}')
         return
 
     # COMMANDS
+    # add user
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *user_ids):
 
@@ -135,7 +136,6 @@ def main(args):
             user_ids = [ str(ctx.author.id) ]
 
         logger.debug(f'user_ids: {user_ids}')
-        logger.debug(f'user_ids length: {len(user_ids)}')
 
         for index, user_id in enumerate(user_ids):
 
@@ -158,8 +158,7 @@ def main(args):
                 user_message += f' (`{users[user_id].id}`) is already on the users list'
                 logger.info(user_message)
                 await ctx.send(user_message)
-        
-        # log current users
+
         logger.info(f'Current Users:\n{users}')
         current_users = f'\nCurrent Users:\n```'
         for index, user_id in enumerate(users):
@@ -176,6 +175,52 @@ def main(args):
         return
 
 
+    # REMOVE USER
+    @client.command(name = 'stop', aliases = ['unsubscribe', 'unwatch'])
+    async def remove_user_from_watchers(ctx, *user_ids):
+
+        logger.debug(f'ctx.guild: {ctx.guild}')
+        logger.debug(f'ctx.author: {ctx.author}')
+        logger.debug(f'ctx.author.id: {ctx.author.id}')
+        logger.debug(f'ctx.message: {ctx.message}')
+        logger.debug(f'ctx.message.author.id: {ctx.message.author.id}')
+
+        if not user_ids:
+            logger.debug('No arguments passed to command')
+            logger.debug(f'Using author ID {ctx.author.id} as argument')
+            user_ids = [ str(ctx.author.id) ]
+
+        logger.debug(f'user_ids: {user_ids}')
+
+        for index, user_id in enumerate(user_ids):
+
+            if not user_id.isnumeric():
+                logger.warning(f'The arguments are not numeric ({user_id}). Skipping...')
+                continue
+
+            if user_id in users:
+                user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
+                user_message += f' (`{users[user_id].id}`) is being removed from the users list'
+                logger.info(user_message)
+                await send_dm(users[user_id], 
+                              message = 'You have been removed from the Watchers list')
+                del users[user_id]
+                await ctx.send(user_message)
+            else:
+                user_message =  f'User `{user_id}` is not on the users list'
+                logger.info(user_message)
+                await ctx.send(user_message)
+
+        # TODO:
+        # - roll this into a function
+        logger.info(f'Current Users:\n{users}')
+        current_users = f'\nCurrent Users:\n```'
+        for index, user_id in enumerate(users):
+            current_users += f'{users[user_id].name}\n'
+        current_users += f'```'
+        await ctx.send(current_users)
+        return 
+
     # READY
     @client.event
     async def on_ready():
@@ -189,7 +234,10 @@ def main(args):
 
         # TODO: 
         #   - put a message in the #laundromatic channel that the bot is online
+        await send_channel_message('laundromatic')
+
         return 
+
 
     # DISCONNECT
     @client.event
@@ -239,7 +287,7 @@ def main(args):
                 logger.debug('Received a private message')
 
                 # send PM to the author
-                await message.author.send('👀 I see you 👍')
+                #await message.author.send('👀 I see you 👍')
                 #user = await get_user_by_id(message.author.id)
                 #await send_dm(user, message = '👀 I see you 👍')
 
