@@ -112,6 +112,11 @@ def main(args):
         await user.send(message)
         return
 
+    # send message to channel (#laundromatic)
+    async def send_message():
+        channel = discord.utils.get(client.get_all_channels(), 
+                                    name = 'general')
+        return
 
     # COMMANDS
     @client.command(name = 'watch', aliases = ['subscribe'])
@@ -133,6 +138,9 @@ def main(args):
             args = [ ctx.author.id ]
 
         for index, arg in enumerate(args):
+            if not arg.isnumeric():
+                logger.warning(f'The arguments are not numeric ({arg}). Skipping...')
+                continue
             if arg not in users:
                 logger.info(f'User ID {arg} not in users list')
                 adding_message = f'Adding {arg} to users list'
@@ -143,7 +151,6 @@ def main(args):
                 await send_dms(users[arg], 
                                message = 'You have been added to the Watchers list')
                 await ctx.send(adding_message)
-
         #await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
         return 
 
