@@ -120,12 +120,12 @@ def main(args):
 
     # COMMANDS
     @client.command(name = 'watch', aliases = ['subscribe'])
-    async def add_user_to_watchers(ctx, *args):
+    async def add_user_to_watchers(ctx, *user_ids):
 
         # NOTE: watchers and users comes from main()
 
-        logger.debug(f'args: {args}')
-        logger.debug(f'args length: {len(args)}')
+        logger.debug(f'user_ids: {user_ids}')
+        logger.debug(f'user_ids length: {len(user_ids)}')
 
         logger.debug(f'ctx.guild: {ctx.guild}')
         logger.debug(f'ctx.author: {ctx.author}')
@@ -133,29 +133,40 @@ def main(args):
         logger.debug(f'ctx.message: {ctx.message}')
         logger.debug(f'ctx.message.author.id: {ctx.message.author.id}')
 
-        if not args:
+        if not user_ids:
             logger.debug('No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
-            args = [ str(ctx.author.id) ]
+            user_ids = [ str(ctx.author.id) ]
 
-        for index, arg in enumerate(args):
-            if not arg.isnumeric():
-                logger.warning(f'The arguments are not numeric ({arg}). Skipping...')
+        for index, user_id in enumerate(user_ids):
+
+            if not user_id.isnumeric():
+                logger.warning(f'The arguments are not numeric ({user_id}). Skipping...')
                 continue
-            if arg not in users:
-                logger.info(f'User ID {arg} not in users list')
-                adding_message = f'Adding `{arg}` to users list'
-                adding_message += f'\nCurrent Users:\n```{users}```'
-                logger.info(adding_message)
-                users[arg] = None
+
+            if user_id not in users:
+                logger.info(f'User ID {user_id} not in users list')
+                users[user_id] = None
                 await set_user_details(users)
-                await send_dm(users[arg], message = 'You have been added to the Watchers list')
-                await ctx.send(adding_message)
+                await send_dm(users[user_id], 
+                              message = 'You have been added to the Watchers list')
+                user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
+                user_message += f' (`{users[user_id].id}`) has been added to the users list'
+                logger.info(user_message)
+                await ctx.send(user_message)
             else:
-                already_message = f'User `{users[arg].name}` is already on the users list'
-                already_message += f'\nCurrent Users:\n```{users}```'
-                logger.info(already_message)
-                await ctx.send(already_message)
+                user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
+                user_message += f' (`{users[user_id].id}`) is already on the users list'
+                logger.info(user_message)
+                await ctx.send(user_message)
+        
+        # log current users
+        logger.info(f'Current Users:\n{users}')
+        current_users = f'\nCurrent Users:\n```'
+        for index, user_id in users:
+            current_users += f'{users[user_id].name}\n'
+        current_users += f'```'
+        await ctx.send(user_message + current_users)
         return 
 
     @add_user_to_watchers.error
