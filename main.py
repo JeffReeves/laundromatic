@@ -106,7 +106,7 @@ def main(args):
         for index, user_id in enumerate(users):
             logger.debug(f'Sending DM to: {user_id}')
             logger.debug(f'Message: {message}')
-            await users[user_id].user.send(message)
+            await users[index].user.send(message)
         return
 
 
