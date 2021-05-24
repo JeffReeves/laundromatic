@@ -152,6 +152,11 @@ def main(args):
                 await send_dms(users[arg], 
                                message = 'You have been added to the Watchers list')
                 await ctx.send(adding_message)
+            else:
+                already_message = f'User {arg} is already on the users list'
+                already_message += f'Current Users:\n{users}'
+                logger.info(already_message)
+                ctx.send(already_message)
         #await ctx.send('{} arguments: {}'.format(len(args), ', '.join(args)))
         return 
 
