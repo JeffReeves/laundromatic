@@ -103,10 +103,10 @@ def main(args):
     async def send_dms(users, message = 'test message'):
         if not isinstance(users, list):
             users = [ users ]
-        for index, user in enumerate(users):
-            logger.debug(f'Sending DM to: {users}')
+        for index, user_id in enumerate(users):
+            logger.debug(f'Sending DM to: {users[user_id]["name"]}')
             logger.debug(f'Message: {message}')
-            await client.user.send(message)
+            await users[user_id].user.send(message)
         return
 
 
