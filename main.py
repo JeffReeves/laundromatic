@@ -169,7 +169,7 @@ def main(args):
         return 
 
     @add_user_to_watchers.error
-    async def add_user_to_watchers_error(ctx, error):
+    async def add_user_to_watchers_error(ctx, *error):
         logger.error(f'{error}')
         #if isinstance(error, commands.BadArgument):
         #    await ctx.send('[ERROR] Invalid user ID(s)')
