@@ -162,17 +162,17 @@ def main(args):
         # log current users
         logger.info(f'Current Users:\n{users}')
         current_users = f'\nCurrent Users:\n```'
-        for index, user_id in users:
+        for index, user_id in enumerate(users):
             current_users += f'{users[user_id].name}\n'
         current_users += f'```'
         await ctx.send(user_message + current_users)
         return 
 
     @add_user_to_watchers.error
-    async def add_user_to_watchers_error(ctx, *error):
+    async def add_user_to_watchers_error(ctx, error):
         logger.error(f'{error}')
-        #if isinstance(error, commands.BadArgument):
-        #    await ctx.send('[ERROR] Invalid user ID(s)')
+        if isinstance(error, commands.BadArgument):
+            await ctx.send('[ERROR] Invalid user ID(s)')
         return
 
 
