@@ -115,7 +115,9 @@ def main(args):
     # send message to channel (#laundromatic)
     async def send_channel_message(name):
         channel = discord.utils.get(client.get_all_channels(), name = name)
-        logger.debug(f'channel: {channel}')
+        if channel:
+            logger.debug(f'channel: {channel}')
+            logger.debug(f'channel.id: {channel.id}')
         return
 
     # COMMANDS
