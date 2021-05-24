@@ -239,11 +239,14 @@ def main(args):
         await set_user_details(users)
 
         # send a DM to each user that the bot is online
-        await send_dms(users, message = '[ONLINE] Watching your laundry')
+        await send_dms(users, 
+                       message = '[ONLINE] Watching your laundry')
 
-        # TODO: 
-        #   - put a message in the #laundromatic channel that the bot is online
-        await send_channel_message('laundromatic')
+        # send a message to a specific channel that the bot is online
+        # TODO:
+        #   - make the channel configurable in the config and parameters
+        await send_channel_message('laundromatic', 
+                                    message = '[ONLINE] Watching your laundry')
 
         return 
 
