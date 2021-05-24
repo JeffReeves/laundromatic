@@ -91,8 +91,8 @@ def main(args):
                 user = await client.fetch_user(user_id)
                 if(user):
                     logger.debug(f'user: {user}')            
-                    #users[user_id] = user
-                    users.update({ user_id: user })
+                    users[user_id] = user
+                    #users.update({ user_id: user })
                 else:
                     logger.error(f'unable to acquire user by user_id: {user_id}')
             else:
@@ -106,7 +106,7 @@ def main(args):
         for index, user_id in enumerate(users):
             logger.debug(f'Sending DM to: {user_id}')
             logger.debug(f'Message: {message}')
-            await users[index].user.send(message)
+            await user_id.send(message)
         return
 
 
