@@ -79,8 +79,8 @@ def main(args):
     #client          = discord.Client(intents = intents)
     client          = commands.Bot(command_prefix = prefix,
                                    intents        = intents)
-    # testing using client.users for global access
-    client.users    = users
+
+
     # CUSTOM FUNCTIONS
 
     # sets user details for all users
@@ -157,7 +157,6 @@ def main(args):
         # include global users 
         global users
         logger.debug(f'global users: {users}')
-        logger.debug(f'client.users: {client.users}')
 
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
@@ -240,7 +239,6 @@ def main(args):
         # include global users 
         global users
         logger.debug(f'global users: {users}')
-        logger.debug(f'client.users: {client.users}')
 
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
@@ -295,9 +293,8 @@ def main(args):
         # if users are present, 
         #   set their user details and send them all a message too
         global users
-        logger.debug(f'users: {users}')
-        logger.debug(f'client.users: {client.users}')
-        if client.users:
+        logger.debug(f'global users: {users}')
+        if users:
             users = await set_user_details(users)
             await send_dms(users, message = online_message)
 
