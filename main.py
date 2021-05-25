@@ -284,6 +284,7 @@ def main(args):
 
         # if users are present, 
         #   set their user details and send them all a message too
+        global users
         if users:
             users = await set_user_details(users)
             await send_dms(users, message = online_message)
