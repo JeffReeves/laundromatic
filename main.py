@@ -201,7 +201,7 @@ def main(args):
         current_users = ''
         if users:
             logger.info(f'Current Users:\n{users}')
-            current_users = f'\nCurrent Users:\n```properties\n'
+            current_users = f'\nWatch List:\n```properties\n'
             for index, user_id in enumerate(users):
                 current_users += f'{users[user_id].name}\n'
             current_users += f'```'
@@ -287,7 +287,7 @@ def main(args):
         current_users = ''
         if users:
             logger.info(f'Current Users:\n{users}')
-            current_users = f'\nCurrent Users:\n```properties\n'
+            current_users = f'\nWatch List:\n```properties\n'
             for index, user_id in enumerate(users):
                 current_users += f'{users[user_id].name}\n'
             current_users += f'```'
