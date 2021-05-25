@@ -430,7 +430,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # token
-    required = bool(not token)
+    required     = bool(not token)
+    print(f'token required: {required}')
     group_tokens = parser.add_mutually_exclusive_group(required = required)    
 
     def decode_base64_token(base64_token):
@@ -516,5 +517,8 @@ if __name__ == "__main__":
 
     if 'watchers' not in args:
         args.watchers   = watchers
+
+    print('argparse arguments:')
+    pprint(args)
 
     main(args)
