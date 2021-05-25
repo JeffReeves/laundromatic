@@ -8,7 +8,6 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Improve output messages to use "watchers" instead of "users"
 # - Get GPIO pins working with light sensor
 
 
@@ -181,16 +180,16 @@ def main(args):
                 # TODO:
                 # - improve time complexity with setting user details
                 users = await set_user_details(users)
-                user_message  = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
-                user_message += f' (||`{users[user_id].id}`||) has been added to the users list'
-                add_message   = f'You have been added to the watchers list'
+                user_message  = f'Added `{users[user_id].name}#{users[user_id].discriminator}`'
+                user_message += f' (||`{users[user_id].id}`||) to the watch list'
+                add_message   = f'You have been added to the watch list'
                 if users[user_id].id != ctx.author.id:
-                    user_message += f' by `{ctx.author.name}` (||`{ctx.author.id}`||)'
+                    user_message += f'\n- requested by `{ctx.author.name}` (||`{ctx.author.id}`||)'
                     add_message  += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = add_message)
             else:
-                user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
-                user_message += f' (||`{users[user_id].id}`||) is already on the users list'
+                user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
+                user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
 
             logger.info(user_message)
             #await ctx.send(user_message)
@@ -267,16 +266,16 @@ def main(args):
             #   2. delete the key from the users dict
             #   3. send a confirmation message the user was removed
             if user_id in users:
-                user_message   = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
-                user_message  += f' (||`{users[user_id].id}`||) is being removed from the users list'
-                remove_message = f'You have been removed from the watchers list'
+                user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
+                user_message  += f' (||`{users[user_id].id}`||) from the watch list'
+                remove_message = f'You have been removed from the watch list'
                 if users[user_id].id != ctx.author.id:
-                    user_message   += f' by `{ctx.author}` (||`{ctx.author.id}`||)'
+                    user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
                     remove_message += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
-                user_message =  f'User `{user_id}` is not on the users list'
+                user_message =  f'User (||`{user_id}`||) is not on the watch list'
                 
             logger.info(user_message)
             # await ctx.send(user_message)
