@@ -88,19 +88,20 @@ def main(args):
         for index, user_id in enumerate(users):
             logger.debug(f'user id: {user_id}')
             # if user has no data, fetch it
-            if not users[user_id]:
-                user = await client.fetch_user(user_id)
-                # TODO:
-                # - fix for error when user is not acquired (user is not part of shared discord server):
-                #   [ add_user_to_watchers_error ] (main.py:202) - Command raised an exception: UnboundLocalError: local variable 'user' referenced before assignment
-                if(user):
-                    logger.debug(f'user: {user}')
-                    #users[user_id] = user
-                    users.update({ user_id: user })
+            if user_id in users:
+                logger.debug(f'user id ({user_id}) in users: {users}')
+                if not users[user_id]:
+                    logger.debug(f'users[user_id]: {users[user_id]} (bool: {bool(users[user_id])}')
+                    user = None # clear user
+                    user = await client.fetch_user(user_id)
+                    if(user):
+                        logger.debug(f'user: {user}')
+                        #users[user_id] = user
+                        users.update({ user_id: user })
+                    else:
+                        logger.error(f'unable to acquire user by user_id: {user_id}')
                 else:
-                    logger.error(f'unable to acquire user by user_id: {user_id}')
-            else:
-                logger.debug(f'user already set: {user}')
+                    logger.debug(f'user already set: {user}')
         return
 
     # send DM to a single user
@@ -167,6 +168,7 @@ def main(args):
             if user_id not in users:
                 logger.info(f'User ID {user_id} not in users list')
                 users[user_id] = None
+                logger.debug(f'Users: {users}')
                 # TODO:
                 # - improve time complexity with setting user details
                 await set_user_details(users)
