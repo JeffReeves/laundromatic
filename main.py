@@ -102,7 +102,7 @@ def main(args):
                         logger.error(f'unable to acquire user by user_id: {user_id}')
                 else:
                     logger.debug(f'user already set: {user}')
-        return
+        return users
 
     # send DM to a single user
     async def send_dm(user, message = 'test message'):
@@ -165,13 +165,15 @@ def main(args):
             #   1. add the user ID as a new key
             #   2. fetch user details
             #   3. DM the user to let them know they've been added
+            global users
             if user_id not in users:
                 logger.info(f'User ID {user_id} not in users list')
                 users[user_id] = None
                 logger.debug(f'Users: {users}')
                 # TODO:
                 # - improve time complexity with setting user details
-                await set_user_details(users)
+
+                users = await set_user_details(users)
                 await send_dm(users[user_id],
                               message = 'You have been added to the Watchers list')
                 user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
@@ -241,6 +243,7 @@ def main(args):
             #   1. message the user they are being removed from watch list
             #   2. delete the key from the users dict
             #   3. send a confirmation message the user was removed
+            global users
             if user_id in users:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is being removed from the users list'
@@ -282,7 +285,7 @@ def main(args):
         # if users are present, 
         #   set their user details and send them all a message too
         if users:
-            await set_user_details(users)
+            users = await set_user_details(users)
             await send_dms(users, message = online_message)
 
         return
