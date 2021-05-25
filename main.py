@@ -197,7 +197,7 @@ def main(args):
         # log and send a message of the current users
         if users:
             logger.info(f'Current Users:\n{users}')
-            current_users = f'\nCurrent Users:\n```'
+            current_users = f'\nCurrent Users:\n```properties\n'
             for index, user_id in enumerate(users):
                 current_users += f'{users[user_id].name}\n'
             current_users += f'```'
@@ -271,7 +271,7 @@ def main(args):
 
         if users:
             logger.info(f'Current Users:\n{users}')
-            current_users = f'\nCurrent Users:\n```'
+            current_users = f'\nCurrent Users:\n```properties\n'
             for index, user_id in enumerate(users):
                 current_users += f'{users[user_id].name}\n'
             current_users += f'```'
