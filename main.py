@@ -15,7 +15,6 @@ author: Jeff Reeves
 
 #==[ IMPORTS ]=============================================================================================================================
 
-import enum
 from pprint import pprint
 import logging
 import sys
