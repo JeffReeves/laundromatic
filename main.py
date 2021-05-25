@@ -270,7 +270,7 @@ def main(args):
     async def on_ready():
 
         # set an online message, log it, and send it to the management channel
-        online_message = f'{client.user} is online and watching laundry'
+        online_message = f'{client.user.name} is online and watching laundry'
         logger.info(online_message)
         await send_channel_message(channel, message = online_message)
 
