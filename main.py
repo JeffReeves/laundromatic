@@ -154,9 +154,9 @@ def main(args):
 
         logger.debug(f'user_ids: {user_ids}')
 
-        # include global users 
-        global users
-        logger.debug(f'global users: {users}')
+        # include nonlocal users 
+        nonlocal users
+        logger.debug(f'nonlocal users: {users}')
 
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
@@ -236,9 +236,9 @@ def main(args):
 
         logger.debug(f'user_ids: {user_ids}')
 
-        # include global users 
-        global users
-        logger.debug(f'global users: {users}')
+        # include nonlocal users
+        nonlocal users
+        logger.debug(f'nonlocal users: {users}')
 
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
@@ -292,8 +292,8 @@ def main(args):
 
         # if users are present, 
         #   set their user details and send them all a message too
-        global users
-        logger.debug(f'global users: {users}')
+        nonlocal users
+        logger.debug(f'nonlocal users: {users}')
         if users:
             users = await set_user_details(users)
             await send_dms(users, message = online_message)
