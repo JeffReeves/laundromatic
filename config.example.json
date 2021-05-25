@@ -1,0 +1,9 @@
+{
+    "token":    "",
+    "channel":  "laundromatic",
+    "prefix":   "!",
+    "loglevel": "info",
+    "watchers": [
+        ""
+    ]
+}
