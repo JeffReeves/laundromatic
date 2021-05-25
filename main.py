@@ -85,6 +85,7 @@ def main(args):
 
     # sets user details for all users
     async def set_user_details(users):
+        user = None # clear user
         logger.debug(f'users: {users}')
         for index, user_id in enumerate(users):
             logger.debug(f'user id: {user_id}')
@@ -93,7 +94,6 @@ def main(args):
                 logger.debug(f'user id ({user_id}) in users: {users}')
                 if not users[user_id]:
                     logger.debug(f'users[user_id]: {users[user_id]} (bool: {bool(users[user_id])}')
-                    user = None # clear user
                     user = await client.fetch_user(user_id)
                     if(user):
                         logger.debug(f'user: {user}')
@@ -208,13 +208,13 @@ def main(args):
             await send_channel_message(message = current_users)
         return
 
-    # handle errors on adding users
-    @add_user_to_watchers.error
-    async def add_user_to_watchers_error(ctx, error):
-        logger.error(f'{error}')
-        if isinstance(error, commands.BadArgument):
-            await ctx.send('[ERROR] Invalid user ID(s)')
-        return
+    # # handle errors on adding users
+    # @add_user_to_watchers.error
+    # async def add_user_to_watchers_error(ctx, error):
+    #     logger.error(f'{error}')
+    #     if isinstance(error, commands.BadArgument):
+    #         await ctx.send('[ERROR] Invalid user ID(s)')
+    #     return
 
     # remove user from watch list
     @client.command(name = 'stop', aliases = ['remove', 'unsubscribe', 'unwatch'])
