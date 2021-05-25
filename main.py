@@ -210,7 +210,7 @@ def main(args):
             current_users = f'No current users watching'
 
         if user_message and current_users:
-            complete_message = user_message + '\n\n' + current_users
+            complete_message = user_message + '\n' + current_users
             logger.info(f'complete_message: {complete_message}')
             await ctx.send(complete_message)
 
@@ -296,7 +296,7 @@ def main(args):
             current_users = f'No current users watching'
 
         if user_message and current_users:
-            complete_message = user_message + '\n\n' + current_users
+            complete_message = user_message + '\n' + current_users
             logger.info(f'complete_message: {complete_message}')
             await ctx.send(complete_message)
 
