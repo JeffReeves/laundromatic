@@ -503,20 +503,12 @@ if __name__ == "__main__":
 
     args, unknown = parser.parse_known_args()
 
-    if 'token' not in args:
-        args.token      = token
-
-    if 'channel' not in args:
-        args.channel    = channel
-
-    if 'prefix' not in args:
-        args.prefix     = prefix
-
-    if 'loglevel' not in args:
-        args.loglevel   = loglevel
-
-    if 'watchers' not in args:
-        args.watchers   = watchers
+    # set args values, if passed or use values set by env variable or config file (or defaults)
+    args.token      = args.token    or token
+    args.channel    = args.channel  or channel
+    args.prefix     = args.prefix   or prefix
+    args.loglevel   = args.loglevel or loglevel
+    args.watchers   = args.watchers or watchers
 
     print('argparse arguments:')
     pprint(args)
