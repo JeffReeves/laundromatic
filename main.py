@@ -51,12 +51,12 @@ def main(args):
 
     # config
     # use arguments if available, else get from user input
-    token    = args.token or getpass('Token: ')
-    channel  = args.channel or 'laundromatic'
-    prefix   = args.prefix or '!'
-    loglevel = args.loglevel or logging.INFO
-    watchers = args.watchers or []
-    users    = dict.fromkeys(watchers) or {}
+    token    = args.token               or getpass.getpass('Token: ')
+    channel  = args.channel             or 'laundromatic'
+    prefix   = args.prefix              or '!'
+    loglevel = args.loglevel            or logging.INFO
+    watchers = args.watchers            or []
+    users    = dict.fromkeys(watchers)  or {}
 
     # set log level
     logger.setLevel(loglevel)
