@@ -209,7 +209,7 @@ def main(args):
             current_users += f'```'
         else:
             logger.info(f'No current users watching')
-            current_users = f'No current users watching'
+            current_users = f'\nNo current users watching'
 
         if user_message and current_users:
             complete_message = user_message + '\n' + current_users
@@ -295,7 +295,7 @@ def main(args):
             current_users += f'```'
         else:
             logger.info(f'No current users watching')
-            current_users = f'No current users watching'
+            current_users = f'\nNo current users watching'
 
         if user_message and current_users:
             complete_message = user_message + '\n' + current_users
