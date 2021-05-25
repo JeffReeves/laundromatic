@@ -79,7 +79,8 @@ def main(args):
     #client          = discord.Client(intents = intents)
     client          = commands.Bot(command_prefix = prefix,
                                    intents        = intents)
-
+    # testing using client.users for global access
+    client.users    = users
     # CUSTOM FUNCTIONS
 
     # sets user details for all users
@@ -96,8 +97,8 @@ def main(args):
                     user = await client.fetch_user(user_id)
                     if(user):
                         logger.debug(f'user: {user}')
-                        #users[user_id] = user
-                        users.update({ user_id: user })
+                        users[user_id] = user
+                        #users.update({ user_id: user })
                     else:
                         logger.error(f'unable to acquire user by user_id: {user_id}')
                 else:
@@ -153,6 +154,11 @@ def main(args):
 
         logger.debug(f'user_ids: {user_ids}')
 
+        # include global users 
+        global users
+        logger.debug(f'global users: {users}')
+        logger.debug(f'client.users: {client.users}')
+
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
 
@@ -165,8 +171,7 @@ def main(args):
             #   1. add the user ID as a new key
             #   2. fetch user details
             #   3. DM the user to let them know they've been added
-            global users
-            logger.debug(f'global users: {users}')
+
             if user_id not in users:
                 logger.info(f'User ID {user_id} not in users list')
                 users[user_id] = None
@@ -232,6 +237,11 @@ def main(args):
 
         logger.debug(f'user_ids: {user_ids}')
 
+        # include global users 
+        global users
+        logger.debug(f'global users: {users}')
+        logger.debug(f'client.users: {client.users}')
+
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
 
@@ -244,8 +254,6 @@ def main(args):
             #   1. message the user they are being removed from watch list
             #   2. delete the key from the users dict
             #   3. send a confirmation message the user was removed
-            global users
-            logger.debug(f'global users: {users}')
             if user_id in users:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is being removed from the users list'
@@ -287,8 +295,9 @@ def main(args):
         # if users are present, 
         #   set their user details and send them all a message too
         global users
-        logger.debug(f'global users: {users}')
-        if users:
+        logger.debug(f'users: {users}')
+        logger.debug(f'client.users: {client.users}')
+        if client.users:
             users = await set_user_details(users)
             await send_dms(users, message = online_message)
 
