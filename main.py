@@ -121,6 +121,7 @@ def main(args):
 
     # send message to specific channel
     async def send_channel_message(name = channel, message = 'test message'):
+        logger.debug(f'channel name: {name}')
         channel_obj = discord.utils.get(client.get_all_channels(), name = name)
         if channel_obj:
             logger.debug(f'channel:    {channel_obj}')
@@ -177,10 +178,9 @@ def main(args):
                 logger.debug(f'Users: {users}')
                 # TODO:
                 # - improve time complexity with setting user details
-
                 users = await set_user_details(users)
-                await send_dm(users[user_id],
-                              message = 'You have been added to the Watchers list')
+                add_message = f'You have been added to the watchers list by {ctx.author}'
+                await send_dm(users[user_id], message = add_message)
                 user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) has been added to the users list'
             else:
@@ -205,6 +205,7 @@ def main(args):
             logger.info(f'No current users watching')
             current_users = f'No current users watching'
         if ctx.message.channel.type == discord.ChannelType.private:
+            logger.debug(f'Sending message of current_users:\n{current_users}')
             await send_channel_message(message = current_users)
         return
 
@@ -255,8 +256,8 @@ def main(args):
             if user_id in users:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is being removed from the users list'
-                await send_dm(users[user_id],
-                              message = 'You have been removed from the Watchers list')
+                remove_message = f'You have been removed from the watchers list by {ctx.author}'
+                await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
                 user_message =  f'User `{user_id}` is not on the users list'
@@ -278,6 +279,7 @@ def main(args):
             logger.info(f'No current users watching')
             current_users = f'No current users watching'
         if ctx.message.channel.type == discord.ChannelType.private:
+            logger.debug(f'Sending message of current_users:\n{current_users}')
             await send_channel_message(message = current_users)
         return
 
