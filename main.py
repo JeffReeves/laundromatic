@@ -179,7 +179,7 @@ def main(args):
                 # TODO:
                 # - improve time complexity with setting user details
                 users = await set_user_details(users)
-                add_message = f'You have been added to the watchers list by {ctx.author}'
+                add_message = f'You have been added to the watchers list by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = add_message)
                 user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) has been added to the users list'
@@ -204,6 +204,7 @@ def main(args):
         else:
             logger.info(f'No current users watching')
             current_users = f'No current users watching'
+        await ctx.send(current_users)
         if ctx.message.channel.type == discord.ChannelType.private:
             logger.debug(f'Sending message of current_users:\n{current_users}')
             await send_channel_message(message = current_users)
@@ -256,7 +257,7 @@ def main(args):
             if user_id in users:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is being removed from the users list'
-                remove_message = f'You have been removed from the watchers list by {ctx.author}'
+                remove_message = f'You have been removed from the watchers list by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
@@ -278,6 +279,7 @@ def main(args):
         else:
             logger.info(f'No current users watching')
             current_users = f'No current users watching'
+        await ctx.send(current_users)
         if ctx.message.channel.type == discord.ChannelType.private:
             logger.debug(f'Sending message of current_users:\n{current_users}')
             await send_channel_message(message = current_users)
