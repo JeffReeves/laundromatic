@@ -50,7 +50,13 @@ Coming Soon&trade;
 
 ## How to Use
 
-This bot will require that you provide it with your **bot token** and at least one **user ID** for subscription to private messages (PMs) that the bot sends.
+This bot will require that you provide it with at least your **bot token**.
+
+Additional values can be supplied if desired, such as:
+- The Discord `channel` to manage the bot from (defaults to: '`landromatic`') 
+- The `prefix` used for all commands (defaults to: '`!`')
+- The `loglevel` to use for logging (defaults to: '`info`')
+- The Discord user ID(s) for any `watchers` (can be added with `!watch` command after starting the bot)
 
 These items can be provided in three ways.
 
@@ -68,12 +74,13 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     ```json
     {
-        "token": "your-bot-token-here",
+        "token":    "your-bot-token-here",
+        "channel":  "laundromatic",
+        "prefix":   "!",
+        "loglevel": "INFO",
         "watchers": [
             "your-user-id-here"
-        ],
-        "prefix": "!",
-        "loglevel": "INFO"
+        ]
     }
     ```
 
@@ -81,14 +88,15 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     ```json
     {
-        "token": "your-bot-token-here",
+        "token":    "your-bot-token-here",
+        "channel":  "laundromatic",
+        "prefix":   "!",
+        "loglevel": "INFO",
         "watchers": [
             "your-user-id-here",
             "additional-user-id-here",
             "as-many-as-you-want"
-        ],
-        "prefix": "!",
-        "loglevel": "INFO"
+        ]
     }
     ```
 
@@ -98,15 +106,18 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     ```sh
     # do not add spaces before or after the "=" (equal sign)
-    export DISCORD_TOKEN='token-goes-here'
-    export DISCORD_WATCHERS='user-id-one user-id-two user-id-three' # space-separated list
+    export LAUNDROMATIC_TOKEN='token-goes-here'
+    export LAUNDROMATIC_CHANNEL='laundromatic'
+    export LAUNDROMATIC_PREFIX='!'
+    export LAUNDROMATIC_LOGLEVEL='info'
+    export LAUNDROMATIC_WATCHERS='user-id-one user-id-two' # space-separated list
     ```
 
     For added security, use `read` to hide sensitive values from command history:
 
     ```sh
-    read -s -p "Token: " DISCORD_TOKEN && export DISCORD_TOKEN
-    read -s -p "Watchers: " DISCORD_WATCHERS && export DISCORD_WATCHERS
+    read -s -p "Token: " LAUNDROMATIC_TOKEN && export LAUNDROMATIC_TOKEN
+    read -s -p "Watchers: " LAUNDROMATIC_WATCHERS && export LAUNDROMATIC_WATCHERS
     ```
 
 3. Pass the token (or base64 encoded token) and watcher/watchers via command line arguments:
@@ -114,19 +125,25 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     The command line supports the following arguments when running the script:
     
     ```txt
-    [-h]
-    [-l LOGLEVEL | --loglevel LOGLEVEL] 
-    (-t TOKEN | -b TOKEN) 
-    (-w WATCHER | --watcher WATCHER | --watchers WATCHERS [WATCHERS ...])
+    [-h | --help]
+    (-t TOKEN    | -b           TOKEN   )
+    [-c CHANNEL  | --channel    CHANNEL ]
+    [-p PREFIX   | --prefix     PREFIX  ]
+    [-l LOGLEVEL | --loglevel   LOGLEVEL] 
+    [-w WATCHER  | --watcher    WATCHER | --watchers WATCHERS [WATCHERS ...]]
 
-    -h, --help              
+    -h, --help
                             show this help message and exit
-    -l, --loglevel          
-                            Logging Level (debug | info | warning | error | critical)
     -t TOKEN, --token TOKEN
                             Token
     -b TOKEN, --base64_token TOKEN
                             Token (base64)
+    -c CHANNEL, --channel CHANNEL
+                            Channel Name for management
+    -p PREFIX, --prefix PREFIX
+                            Token (base64)
+    -l, --loglevel
+                            Logging Level (debug | info | warning | error | critical)
     -w WATCHER, --watcher WATCHER
                             User ID of Watcher (can be used multiple times) 
     --watchers WATCHERS [WATCHERS ...]
@@ -136,7 +153,7 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     An example of running the script:
 
     ```sh
-    ./main.py --loglevel 'debug' --token 'my-token-goes-here' --watcher 'my-user-id' --watcher 'some-other-user-id'
+    ./main.py --token 'my-token-goes-here' --channel 'my-bot-management-channel' --prefix '!'  --watcher 'my-user-id' --loglevel 'debug'  --watcher 'some-other-user-id'
     ```
 
     A few more examples of using command line arguments:
@@ -148,7 +165,7 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     ./main.py --token 'my-token-goes-here' --watcher 'my-user-id' --watcher 'some-other-user-id'--loglevel 'debug'
 
-    ./main.py -l 'debug' -t 'my-token-goes-here' -w 'my-user-id'
+    ./main.py -t 'my-token-goes-here' -c 'my-bot-management-channel' -p '!' -l 'error' -w 'my-user-id'
     ```
 
 
