@@ -184,7 +184,7 @@ def main(args):
                 await send_dm(users[user_id], message = add_message)
                 user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) has been added to the users list'
-                user_message += f' by `{ctx.author}`` (`{ctx.author.id}``)'
+                user_message += f' by `{ctx.author}` (`{ctx.author.id}`)'
             else:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is already on the users list'
@@ -266,7 +266,7 @@ def main(args):
             if user_id in users:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is being removed from the users list'
-                user_message += f' by `{ctx.author}`` (`{ctx.author.id}``)'
+                user_message += f' by `{ctx.author}` (`{ctx.author.id}`)'
                 remove_message = f'You have been removed from the watchers list by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
