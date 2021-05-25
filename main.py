@@ -159,6 +159,7 @@ def main(args):
         nonlocal users
         logger.debug(f'nonlocal users: {users}')
 
+        user_message = ''
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
 
@@ -183,18 +184,19 @@ def main(args):
                 await send_dm(users[user_id], message = add_message)
                 user_message = f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) has been added to the users list'
+                user_message += f' by `{ctx.author}`` (`{ctx.author.id}``)'
             else:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is already on the users list'
 
             logger.info(user_message)
-            await ctx.send(user_message)
+            #await ctx.send(user_message)
 
-            # if command was received on a DM, also send output to a channel
-            if ctx.message.channel.type == discord.ChannelType.private:
-                await send_channel_message(message = user_message)
+            # # if command was received on a DM, also send output to a channel
+            # if ctx.message.channel.type == discord.ChannelType.private:
+            #     await send_channel_message(message = user_message)
 
-        # log and send a message of the current users
+        current_users = ''
         if users:
             logger.info(f'Current Users:\n{users}')
             current_users = f'\nCurrent Users:\n```properties\n'
@@ -204,10 +206,16 @@ def main(args):
         else:
             logger.info(f'No current users watching')
             current_users = f'No current users watching'
-        await ctx.send(current_users)
-        if ctx.message.channel.type == discord.ChannelType.private:
-            logger.debug(f'Sending message of current_users:\n{current_users}')
-            await send_channel_message(message = current_users)
+
+        if user_message and current_users:
+            complete_message = user_message + '\n\n' + current_users
+            logger.info(f'complete_message: {complete_message}')
+            await ctx.send(complete_message)
+
+            # if command was received on a DM, also send output to a channel
+            if ctx.message.channel.type == discord.ChannelType.private:
+                logger.debug(f'Sending message of current_users:\n{current_users}')
+                await send_channel_message(message = complete_message)
         return
 
     # # handle errors on adding users
@@ -242,6 +250,7 @@ def main(args):
         nonlocal users
         logger.debug(f'nonlocal users: {users}')
 
+        user_message = ''
         # iterate over all user IDs
         for index, user_id in enumerate(user_ids):
 
@@ -257,6 +266,7 @@ def main(args):
             if user_id in users:
                 user_message =  f'User `{users[user_id].name}#{users[user_id].discriminator}`'
                 user_message += f' (`{users[user_id].id}`) is being removed from the users list'
+                user_message += f' by `{ctx.author}`` (`{ctx.author.id}``)'
                 remove_message = f'You have been removed from the watchers list by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
@@ -264,12 +274,13 @@ def main(args):
                 user_message =  f'User `{user_id}` is not on the users list'
                 
             logger.info(user_message)
-            await ctx.send(user_message)
+            # await ctx.send(user_message)
 
-            # if command was received on a DM, also send output to a channel
-            if ctx.message.channel.type == discord.ChannelType.private:
-                await send_channel_message(message = user_message)
+            # # if command was received on a DM, also send output to a channel
+            # if ctx.message.channel.type == discord.ChannelType.private:
+            #     await send_channel_message(message = user_message)
 
+        current_users = ''
         if users:
             logger.info(f'Current Users:\n{users}')
             current_users = f'\nCurrent Users:\n```properties\n'
@@ -279,10 +290,16 @@ def main(args):
         else:
             logger.info(f'No current users watching')
             current_users = f'No current users watching'
-        await ctx.send(current_users)
-        if ctx.message.channel.type == discord.ChannelType.private:
-            logger.debug(f'Sending message of current_users:\n{current_users}')
-            await send_channel_message(message = current_users)
+
+        if user_message and current_users:
+            complete_message = user_message + '\n\n' + current_users
+            logger.info(f'complete_message: {complete_message}')
+            await ctx.send(complete_message)
+
+            # if command was received on a DM, also send output to a channel
+            if ctx.message.channel.type == discord.ChannelType.private:
+                logger.debug(f'Sending message of current_users:\n{current_users}')
+                await send_channel_message(message = complete_message)
         return
 
     # READY
