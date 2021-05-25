@@ -384,27 +384,21 @@ if __name__ == "__main__":
     if os.path.exists(config_file):
         with open(config_file) as json_config_file:
             config = json.load(json_config_file)
-            pprint(config)
             if 'token' in config:
                 token = config['token']
-                print(f'found token {token}')
 
             if 'channel' in config:
                 channel = config['channel']
-                print(f'found channel {channel}')
 
             if 'prefix' in config:
                 prefix = config['prefix']
-                print(f'found prefix {prefix}')
 
             if 'loglevel' in config:
                 loglevel = config['loglevel']
-                print(f'found loglevel {loglevel}')
 
             if 'watchers' in config:
                 if all(config['watchers']):
                     watchers = config['watchers']
-                    print(f'found watchers {watchers}')
 
 
     # 2. environment variables
@@ -431,7 +425,6 @@ if __name__ == "__main__":
 
     # token
     required     = bool(not token)
-    print(f'token required: {required}')
     group_tokens = parser.add_mutually_exclusive_group(required = required)    
 
     def decode_base64_token(base64_token):
@@ -501,16 +494,16 @@ if __name__ == "__main__":
                                 help    = 'User IDs for Watchers (space separated list)')
 
 
+    # parse arguments
     args, unknown = parser.parse_known_args()
 
-    # set args values, if passed or use values set by env variable or config file (or defaults)
+    # set args values, if passed to argparse
+    #   or use values set by environment variable or config file
+    #   if no values found, use the defaults set at the beginning
     args.token      = args.token    or token
     args.channel    = args.channel  or channel
     args.prefix     = args.prefix   or prefix
     args.loglevel   = args.loglevel or loglevel
     args.watchers   = args.watchers or watchers
-
-    print('argparse arguments:')
-    pprint(args)
 
     main(args)
