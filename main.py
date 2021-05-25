@@ -8,6 +8,7 @@ author: Jeff Reeves
 """
 
 # TODO:
+# - Improve output messages to use "watchers" instead of "users"
 # - Get GPIO pins working with light sensor
 
 
