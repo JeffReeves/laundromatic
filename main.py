@@ -8,6 +8,7 @@ author: Jeff Reeves
 """
 
 # TODO:
+# - Create command to test sending DMs to one or all users
 # - Create command to get User ID by name
 #   - Improve add_user and remove_user commands to support names
 # - Get GPIO pins working with light sensor
