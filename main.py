@@ -90,6 +90,9 @@ def main(args):
             # if user has no data, fetch it
             if not users[user_id]:
                 user = await client.fetch_user(user_id)
+                # TODO:
+                # - fix for error when user is not acquired (user is not part of shared discord server):
+                #   [ add_user_to_watchers_error ] (main.py:202) - Command raised an exception: UnboundLocalError: local variable 'user' referenced before assignment
                 if(user):
                     logger.debug(f'user: {user}')
                     #users[user_id] = user
