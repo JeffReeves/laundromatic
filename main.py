@@ -425,35 +425,37 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # token
-    group_tokens = parser.add_mutually_exclusive_group(required = bool(not token))    
+    required = bool(not token)
+    print(f'required: {required}')
+    group_tokens = parser.add_mutually_exclusive_group(required = required)    
 
     def decode_base64_token(base64_token):
         return base64.b64decode(base64_token).decode('UTF-8')
 
     group_tokens.add_argument('-t',
-                                '--token',
-                                dest      = 'token',
-                                type      = str,
-                                help      = 'Token')
+                              '--token',
+                              dest = 'token',
+                              type = str,
+                              help = 'Token')
 
     group_tokens.add_argument('-b',
-                                '--base64_token',
-                                dest      = 'token',
-                                type      = decode_base64_token,
-                                help      = 'Token (base64)')
+                              '--base64_token',
+                              dest = 'token',
+                              type = decode_base64_token,
+                              help = 'Token (base64)')
     # channel
     parser.add_argument('-c',
                         '--channel',
-                        dest        = 'channel',
-                        type        = str,
-                        help        = 'Channel Name for management')
+                        dest = 'channel',
+                        type = str,
+                        help = 'Channel Name for management')
 
     # prefix
     parser.add_argument('-p',
                         '--prefix',
-                        dest        = 'prefix',
-                        type        = str,
-                        help        = 'Prefix for commands')
+                        dest = 'prefix',
+                        type = str,
+                        help = 'Prefix for commands')
 
     # loglevels
     loglevels = {
@@ -473,9 +475,9 @@ if __name__ == "__main__":
 
     parser.add_argument('-l',
                         '--loglevel',
-                        dest    = 'loglevel',
-                        type    = set_log_level,
-                        help    = f"Logging Level ({' | '.join(loglevels.keys())})")
+                        dest = 'loglevel',
+                        type = set_log_level,
+                        help = f"Logging Level ({' | '.join(loglevels.keys())})")
 
     # watchers
     group_watchers = parser.add_mutually_exclusive_group(required = False)
