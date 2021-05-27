@@ -218,6 +218,7 @@ def main(args):
         # iterate over all user IDs or usernames
         for index, user_id in enumerate(user_ids_or_names):
 
+            username = ''
             # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
                 username = user_id
@@ -290,6 +291,7 @@ def main(args):
         # iterate over all user IDs or usernames
         for index, user_id in enumerate(user_ids_or_names):
 
+            username = ''
             # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
                 username = user_id
