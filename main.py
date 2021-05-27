@@ -225,6 +225,7 @@ def main(args):
                 logger.info(f'Trying to get user ID from username...')
                 user_id = str(await get_id_by_username(ctx, username, send_message = False))
                 logger.debug(f'user_id after get_id_by_username: {user_id}')
+                logger.debug(f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
                 if not user_id or user_id == None:
                     logger.warning(f'Unable to get user ID for username: {username}')
                     continue
@@ -253,7 +254,7 @@ def main(args):
             else:
                 #user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
-                user_message +=  f'User (||`{user_id or username}`||) is already on the watch list\n'
+                user_message +=  f'User (||`{username or user_id}`||) is already on the watch list\n'
 
             logger.info(user_message)
 
@@ -296,6 +297,7 @@ def main(args):
                 logger.info(f'Trying to get user ID from username...')
                 user_id = str(await get_id_by_username(ctx, username, send_message = False))
                 logger.debug(f'user_id after get_id_by_username: {user_id}')
+                logger.debug(f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
                 if not user_id or user_id == None:
                     logger.warning(f'Unable to get user ID for username: {username}')
                     continue
@@ -317,7 +319,7 @@ def main(args):
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
-                user_message +=  f'User (||`{user_id or username}`||) is not on the watch list\n'
+                user_message +=  f'User (||`{username or user_id}`||) is not on the watch list\n'
                 
             logger.info(user_message)
 
