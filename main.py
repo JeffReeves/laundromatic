@@ -245,11 +245,11 @@ def main(args):
                 users = await set_user_details(users)
                 #user_message  = f'Added `{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message += f' (||`{users[user_id].id}`||) to the watch list'
-                user_message  += f'Added `{users[user_id].name}` to the watch list'
+                user_message  += f'Added `{users[user_id].name}` to the watch list\n'
                 add_message   = f'You have been added to the watch list'
                 if users[user_id].id != ctx.author.id:
                     #user_message += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
-                    user_message += f'\n(requested by `{ctx.author.name}`)'
+                    user_message += f'(requested by `{ctx.author.name}`)'
                     add_message  += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = add_message)
             else:
@@ -308,11 +308,11 @@ def main(args):
             if user_id in users:
                 #user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message  += f' (||`{users[user_id].id}`||) from the watch list'
-                user_message   += f'Removed `{users[user_id].name}` from the watch list'
+                user_message   += f'Removed `{users[user_id].name}` from the watch list\n'
                 remove_message = f'You have been removed from the watch list'
                 if users[user_id].id != ctx.author.id:
                     #user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
-                    user_message += f'\n(requested by `{ctx.author.name}`)'
+                    user_message += f'(requested by `{ctx.author.name}`)'
                     remove_message += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
