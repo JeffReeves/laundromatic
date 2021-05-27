@@ -152,7 +152,7 @@ def main(args):
             user_message += '\n'
 
         if current_users:
-            complete_message = user_message + '\n' + current_users
+            complete_message = user_message + current_users
             logger.info(f'complete_message: {complete_message}')
             await ctx.send(complete_message)
 
