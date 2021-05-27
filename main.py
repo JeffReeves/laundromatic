@@ -174,7 +174,7 @@ def main(args):
         if not username:
             logger.debug('No argument passed to command')
             logger.debug(f'Using author {ctx.author.name} as argument')
-            message = f'`{ctx.author.name}`\'s user ID is:\n`{str(user_id)}`'
+            message = f'`{ctx.author.name}`\'s user ID is:\n`{str(ctx.author.id)}`'
             await ctx.send(message)
             return
 
