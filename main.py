@@ -305,7 +305,7 @@ def main(args):
             #   1. message the user they are being removed from watch list
             #   2. delete the key from the users dict
             #   3. send a confirmation message the user was removed
-            if user_id in users:
+            if str(user_id) in users:
                 #user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message  += f' (||`{users[user_id].id}`||) from the watch list'
                 user_message   += f'Removed `{users[user_id].name}` from the watch list\n'
