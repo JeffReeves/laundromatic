@@ -8,8 +8,7 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Create command to get User ID by name
-#   - Improve add_user and remove_user commands to support names
+# - Improve add_user and remove_user commands to support names
 # - Get GPIO pins working with light sensor
 
 
@@ -169,14 +168,17 @@ def main(args):
     @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
     async def get_id_by_username(ctx, username = ''):
 
+        user_id = None
+
         # if no username was passed as an argument, 
         #   assume the user passed their own username
         if not username:
             logger.debug('No argument passed to command')
             logger.debug(f'Using author {ctx.author.name} as argument')
-            message = f'`{ctx.author.name}`\'s user ID is:\n`{str(ctx.author.id)}`'
+            user_id = str(ctx.author.id)
+            message = f'`{ctx.author.name}`\'s user ID is:\n`{user_id}`'
             await ctx.send(message)
-            return
+            return user_id
 
         logger.info(f'Attempting to find user ID for: {username}')
 
@@ -186,41 +188,47 @@ def main(args):
         if member:
             logger.debug(f'member:   {member}')
             logger.info(f'member.id: {member.id}')
-            message = f'`{username}`\'s user ID is:\n`{str(member.id)}`'
+            user_id = member.id
+            message = f'`{username}`\'s user ID is:\n`{user_id}`'
             logger.info(message)
         else:
             message = f'Unable to acquire user ID for `{username}`'
             logger.warning(message)
 
         await ctx.send(message)
-        return 
+        return user_id
 
 
     # add user to watch list
     @client.command(name = 'watch', aliases = ['subscribe'])
-    async def add_user_to_watchers(ctx, *user_ids):
+    async def add_user_to_watchers(ctx, *user_ids_or_names):
 
-        # if no user IDs were passed as arguments, 
+        # if no user IDs or usernames were passed as arguments, 
         #   assume the user passed their own user ID
-        if not user_ids:
+        if not user_ids_or_names:
             logger.debug('No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
-            user_ids = [ str(ctx.author.id) ]
+            user_ids_or_names = [ str(ctx.author.id) ]
 
-        logger.debug(f'user_ids: {user_ids}')
+        logger.debug(f'user_ids_or_names: {user_ids_or_names}')
 
         # include nonlocal users 
         nonlocal users
         logger.debug(f'nonlocal users: {users}')
 
         user_message = ''
-        # iterate over all user IDs
-        for index, user_id in enumerate(user_ids):
+        # iterate over all user IDs or usernames
+        for index, user_id in enumerate(user_ids_or_names):
 
-            # if an argument wasn't numeric, skip it
+            # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
-                logger.warning(f'The arguments are not numeric ({user_id}). Skipping...')
-                continue
+                logger.warning(f'The argument is not numeric ({user_id})')
+                logger.info(f'Trying to get user ID from username...')
+                user_id = await get_id_by_username(ctx, user_id)
+
+                if not user_id:
+                    logger.warning(f'Unable to get user ID for username: {user_id}')
+                    continue
 
             # if the user ID is not in the users dict, 
             #   1. add the user ID as a new key
@@ -263,29 +271,34 @@ def main(args):
 
     # remove user from watch list
     @client.command(name = 'stop', aliases = ['remove', 'unsubscribe', 'unwatch'])
-    async def remove_user_from_watchers(ctx, *user_ids):
+    async def remove_user_from_watchers(ctx, *user_ids_or_names):
 
-        # if no user IDs were passed as arguments, 
+        # if no user IDs or usernames were passed as arguments, 
         #   assume the user passed their own user ID
-        if not user_ids:
+        if not user_ids_or_names:
             logger.debug('No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
-            user_ids = [ str(ctx.author.id) ]
+            user_ids_or_names = [ str(ctx.author.id) ]
 
-        logger.debug(f'user_ids: {user_ids}')
+        logger.debug(f'user_ids_or_names: {user_ids_or_names}')
 
         # include nonlocal users
         nonlocal users
         logger.debug(f'nonlocal users: {users}')
 
         user_message = ''
-        # iterate over all user IDs
-        for index, user_id in enumerate(user_ids):
+        # iterate over all user IDs or usernames
+        for index, user_id in enumerate(user_ids_or_names):
 
-            # if an argument wasn't numeric, skip it
+            # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
-                logger.warning(f'The arguments are not numeric ({user_id}). Skipping...')
-                continue
+                logger.warning(f'The argument is not numeric ({user_id})')
+                logger.info(f'Trying to get user ID from username...')
+                user_id = await get_id_by_username(ctx, user_id)
+
+                if not user_id:
+                    logger.warning(f'Unable to get user ID for username: {user_id}')
+                    continue
 
             # if the user ID is in the users dict: 
             #   1. message the user they are being removed from watch list
