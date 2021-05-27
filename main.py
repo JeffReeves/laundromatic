@@ -134,20 +134,40 @@ def main(args):
             await channel_obj.send(message)
         return
 
+    # send list of current users
+    async def message_current_users(ctx, user_message = ''):
+        current_users = ''
+        nonlocal users
+        if users:
+            logger.info(f'Current Users:\n{users}')
+            current_users = f'\nWatch List:\n```properties\n'
+            for index, user_id in enumerate(users):
+                current_users += f'{users[user_id].name} {users[user_id].id}\n'
+            current_users += f'```'
+        else:
+            logger.info(f'No current users watching')
+            current_users = f'\nNo current users watching'
+
+        if user_message:
+            user_message += '\n'
+
+        if current_users:
+            complete_message = user_message + '\n' + current_users
+            logger.info(f'complete_message: {complete_message}')
+            await ctx.send(complete_message)
+
+            # if command was received on a DM, also send output to a channel
+            if ctx.message.channel.type == discord.ChannelType.private:
+                logger.debug(f'Sending message of current_users:\n{current_users}')
+                await send_channel_message(message = complete_message)
+
+        return
 
     # COMMANDS
 
     # add user to watch list
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *user_ids):
-
-        # NOTE: watchers and users comes from main()
-        logger.debug(f'ctx.guild:                {ctx.guild}')
-        logger.debug(f'ctx.author:               {ctx.author}')
-        logger.debug(f'ctx.author.id:            {ctx.author.id}')
-        logger.debug(f'ctx.message:              {ctx.message}')
-        logger.debug(f'ctx.message.author.id:    {ctx.message.author.id}')
-        logger.debug(f'ctx.message.channel.type: {ctx.message.channel.type}')
 
         # if no user IDs were passed as arguments, 
         #   assume the user passed their own user ID
@@ -198,32 +218,8 @@ def main(args):
                 user_message =  f'`{users[user_id].name} is already on the watch list'
 
             logger.info(user_message)
-            #await ctx.send(user_message)
 
-            # # if command was received on a DM, also send output to a channel
-            # if ctx.message.channel.type == discord.ChannelType.private:
-            #     await send_channel_message(message = user_message)
-
-        current_users = ''
-        if users:
-            logger.info(f'Current Users:\n{users}')
-            current_users = f'\nWatch List:\n```properties\n'
-            for index, user_id in enumerate(users):
-                current_users += f'{users[user_id].name} {users[user_id].id}\n'
-            current_users += f'```'
-        else:
-            logger.info(f'No current users watching')
-            current_users = f'\nNo current users watching'
-
-        if user_message and current_users:
-            complete_message = user_message + '\n' + current_users
-            logger.info(f'complete_message: {complete_message}')
-            await ctx.send(complete_message)
-
-            # if command was received on a DM, also send output to a channel
-            if ctx.message.channel.type == discord.ChannelType.private:
-                logger.debug(f'Sending message of current_users:\n{current_users}')
-                await send_channel_message(message = complete_message)
+        await message_current_users(ctx, user_message)
         return
 
     # # handle errors on adding users
@@ -237,13 +233,6 @@ def main(args):
     # remove user from watch list
     @client.command(name = 'stop', aliases = ['remove', 'unsubscribe', 'unwatch'])
     async def remove_user_from_watchers(ctx, *user_ids):
-
-        logger.debug(f'ctx.guild:                {ctx.guild}')
-        logger.debug(f'ctx.author:               {ctx.author}')
-        logger.debug(f'ctx.author.id:            {ctx.author.id}')
-        logger.debug(f'ctx.message:              {ctx.message}')
-        logger.debug(f'ctx.message.author.id:    {ctx.message.author.id}')
-        logger.debug(f'ctx.message.channel.type: {ctx.message.channel.type}')
 
         # if no user IDs were passed as arguments, 
         #   assume the user passed their own user ID
@@ -286,32 +275,8 @@ def main(args):
                 user_message =  f'User (||`{user_id}`||) is not on the watch list'
                 
             logger.info(user_message)
-            # await ctx.send(user_message)
 
-            # # if command was received on a DM, also send output to a channel
-            # if ctx.message.channel.type == discord.ChannelType.private:
-            #     await send_channel_message(message = user_message)
-
-        current_users = ''
-        if users:
-            logger.info(f'Current Users:\n{users}')
-            current_users = f'\nWatch List:\n```properties\n'
-            for index, user_id in enumerate(users):
-                current_users += f'{users[user_id].name} {users[user_id].id}\n'
-            current_users += f'```'
-        else:
-            logger.info(f'No current users watching')
-            current_users = f'\nNo current users watching'
-
-        if user_message and current_users:
-            complete_message = user_message + '\n' + current_users
-            logger.info(f'complete_message: {complete_message}')
-            await ctx.send(complete_message)
-
-            # if command was received on a DM, also send output to a channel
-            if ctx.message.channel.type == discord.ChannelType.private:
-                logger.debug(f'Sending message of current_users:\n{current_users}')
-                await send_channel_message(message = complete_message)
+        await message_current_users(ctx, user_message)
         return
 
     # READY
