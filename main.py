@@ -201,7 +201,7 @@ def main(args):
 
 
     # add user to watch list
-    @client.command(name = 'watch', aliases = ['subscribe'])
+    @client.command(name = 'watch', aliases = ['add', 'subscribe'])
     async def add_user_to_watchers(ctx, *user_ids_or_names):
 
         # if no user IDs or usernames were passed as arguments, 
