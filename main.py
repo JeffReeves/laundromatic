@@ -8,8 +8,6 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Create command to get User ID by name
-#   - Improve add_user and remove_user commands to support names
 # - Get GPIO pins working with light sensor
 
 
@@ -133,86 +131,22 @@ def main(args):
             await channel_obj.send(message)
         return
 
-
-    # COMMANDS
-
-    # add user to watch list
-    @client.command(name = 'watch', aliases = ['subscribe'])
-    async def add_user_to_watchers(ctx, *user_ids):
-
-        # NOTE: watchers and users comes from main()
-        logger.debug(f'ctx.guild:                {ctx.guild}')
-        logger.debug(f'ctx.author:               {ctx.author}')
-        logger.debug(f'ctx.author.id:            {ctx.author.id}')
-        logger.debug(f'ctx.message:              {ctx.message}')
-        logger.debug(f'ctx.message.author.id:    {ctx.message.author.id}')
-        logger.debug(f'ctx.message.channel.type: {ctx.message.channel.type}')
-
-        # if no user IDs were passed as arguments, 
-        #   assume the user passed their own user ID
-        if not user_ids:
-            logger.debug('No arguments passed to command')
-            logger.debug(f'Using author ID {ctx.author.id} as argument')
-            user_ids = [ str(ctx.author.id) ]
-
-        logger.debug(f'user_ids: {user_ids}')
-
-        # include nonlocal users 
-        nonlocal users
-        logger.debug(f'nonlocal users: {users}')
-
-        user_message = ''
-        # iterate over all user IDs
-        for index, user_id in enumerate(user_ids):
-
-            # if an argument wasn't numeric, skip it
-            if not user_id.isnumeric():
-                logger.warning(f'The arguments are not numeric ({user_id}). Skipping...')
-                continue
-
-            # if the user ID is not in the users dict, 
-            #   1. add the user ID as a new key
-            #   2. fetch user details
-            #   3. DM the user to let them know they've been added
-
-            if user_id not in users:
-                logger.info(f'User ID {user_id} not in users list')
-                users[user_id] = None
-                logger.debug(f'Users: {users}')
-                # TODO:
-                # - improve time complexity with setting user details
-                users = await set_user_details(users)
-                user_message  = f'Added `{users[user_id].name}#{users[user_id].discriminator}`'
-                user_message += f' (||`{users[user_id].id}`||) to the watch list'
-                add_message   = f'You have been added to the watch list'
-                if users[user_id].id != ctx.author.id:
-                    user_message += f'\n- requested by `{ctx.author.name}` (||`{ctx.author.id}`||)'
-                    add_message  += f' by `{ctx.author.name}`'
-                await send_dm(users[user_id], message = add_message)
-            else:
-                user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
-                user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
-
-            logger.info(user_message)
-            #await ctx.send(user_message)
-
-            # # if command was received on a DM, also send output to a channel
-            # if ctx.message.channel.type == discord.ChannelType.private:
-            #     await send_channel_message(message = user_message)
-
+    # send list of current users
+    async def message_current_users(ctx, user_message = ''):
         current_users = ''
+        nonlocal users
         if users:
             logger.info(f'Current Users:\n{users}')
             current_users = f'\nWatch List:\n```properties\n'
             for index, user_id in enumerate(users):
-                current_users += f'{users[user_id].name}\n'
+                current_users += f'{users[user_id].name} {users[user_id].id}\n'
             current_users += f'```'
         else:
             logger.info(f'No current users watching')
             current_users = f'\nNo current users watching'
 
-        if user_message and current_users:
-            complete_message = user_message + '\n' + current_users
+        if current_users:
+            complete_message = user_message + current_users
             logger.info(f'complete_message: {complete_message}')
             await ctx.send(complete_message)
 
@@ -220,6 +154,112 @@ def main(args):
             if ctx.message.channel.type == discord.ChannelType.private:
                 logger.debug(f'Sending message of current_users:\n{current_users}')
                 await send_channel_message(message = complete_message)
+
+        return
+
+
+    # COMMANDS
+
+    # get user ID by username
+    @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
+    async def get_id_by_username(ctx, username = '', send_message = True):
+
+        user_id = None
+
+        # if no username was passed as an argument, 
+        #   assume the user passed their own username
+        if not username:
+            logger.debug('No argument passed to command')
+            logger.debug(f'Using author {ctx.author.name} as argument')
+            user_id = str(ctx.author.id)
+            message = f'`{ctx.author.name}`\'s user ID is:\n`{user_id}`'
+            if send_message:
+                await ctx.send(message)
+            return user_id
+
+        logger.info(f'Attempting to find user ID for: {username}')
+
+        # get a member that matches the username, from all members of the guild
+        member = discord.utils.get(client.get_all_members(), name = username)
+
+        if member:
+            logger.debug(f'member:   {member}')
+            logger.info(f'member.id: {member.id}')
+            user_id = member.id
+            message = f'`{username}`\'s user ID is:\n`{user_id}`'
+            logger.info(message)
+        else:
+            message = f'Unable to acquire user ID for `{username}`'
+            logger.warning(message)
+
+        if send_message:
+            await ctx.send(message)
+        return user_id
+
+
+    # add user to watch list
+    @client.command(name = 'watch', aliases = ['add', 'subscribe'])
+    async def add_user_to_watchers(ctx, *user_ids_or_names):
+
+        # if no user IDs or usernames were passed as arguments, 
+        #   assume the user passed their own user ID
+        if not user_ids_or_names:
+            logger.debug('No arguments passed to command')
+            logger.debug(f'Using author ID {ctx.author.id} as argument')
+            user_ids_or_names = [ str(ctx.author.id) ]
+
+        logger.debug(f'user_ids_or_names: {user_ids_or_names}')
+
+        # include nonlocal users 
+        nonlocal users
+        logger.debug(f'nonlocal users: {users}')
+
+        user_message = ''
+        # iterate over all user IDs or usernames
+        for index, user_id in enumerate(user_ids_or_names):
+
+            username = ''
+            # if an argument wasn't numeric, try to get the user ID from the username
+            if not user_id.isnumeric():
+                username = user_id
+                logger.warning(f'The argument is not numeric ({username})')
+                logger.info(f'Trying to get user ID from username...')
+                user_id = str(await get_id_by_username(ctx, username, send_message = False))
+                logger.debug(f'user_id after get_id_by_username: {user_id}')
+                logger.debug(f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
+                if not user_id or user_id == None:
+                    logger.warning(f'Unable to get user ID for username: {username}')
+                    continue
+
+            # if the user ID is not in the users dict, 
+            #   1. add the user ID as a new key
+            #   2. fetch user details
+            #   3. DM the user to let them know they've been added
+            logger.debug(f'if user_id ({user_id}) not in users: {bool(user_id not in users)}')
+            if user_id not in users:
+                logger.info(f'User ID {user_id} not in users list')
+                users[user_id] = None
+                logger.debug(f'Users: {users}')
+                # TODO:
+                # - improve time complexity with setting user details
+                users = await set_user_details(users)
+                #user_message  = f'Added `{users[user_id].name}#{users[user_id].discriminator}`'
+                #user_message += f' (||`{users[user_id].id}`||) to the watch list'
+                user_message  += f'Added `{users[user_id].name}` to the watch list\n'
+                add_message   = f'You have been added to the watch list'
+                if users[user_id].id != ctx.author.id:
+                    #user_message += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
+                    user_message += f'(requested by `{ctx.author.name}`)\n'
+                    add_message  += f' by `{ctx.author.name}`'
+                await send_dm(users[user_id], message = add_message)
+            else:
+                #user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
+                #user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
+                user_message +=  f'User `{username or user_id}` is already on the watch list\n'
+
+            logger.info(user_message)
+
+        await message_current_users(ctx, user_message)
         return
 
     # # handle errors on adding users
@@ -232,80 +272,67 @@ def main(args):
 
     # remove user from watch list
     @client.command(name = 'stop', aliases = ['remove', 'unsubscribe', 'unwatch'])
-    async def remove_user_from_watchers(ctx, *user_ids):
+    async def remove_user_from_watchers(ctx, *user_ids_or_names):
 
-        logger.debug(f'ctx.guild:                {ctx.guild}')
-        logger.debug(f'ctx.author:               {ctx.author}')
-        logger.debug(f'ctx.author.id:            {ctx.author.id}')
-        logger.debug(f'ctx.message:              {ctx.message}')
-        logger.debug(f'ctx.message.author.id:    {ctx.message.author.id}')
-        logger.debug(f'ctx.message.channel.type: {ctx.message.channel.type}')
-
-        # if no user IDs were passed as arguments, 
+        # if no user IDs or usernames were passed as arguments, 
         #   assume the user passed their own user ID
-        if not user_ids:
+        if not user_ids_or_names:
             logger.debug('No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
-            user_ids = [ str(ctx.author.id) ]
+            user_ids_or_names = [ str(ctx.author.id) ]
 
-        logger.debug(f'user_ids: {user_ids}')
+        logger.debug(f'user_ids_or_names: {user_ids_or_names}')
 
         # include nonlocal users
         nonlocal users
         logger.debug(f'nonlocal users: {users}')
 
         user_message = ''
-        # iterate over all user IDs
-        for index, user_id in enumerate(user_ids):
+        # iterate over all user IDs or usernames
+        for index, user_id in enumerate(user_ids_or_names):
 
-            # if an argument wasn't numeric, skip it
+            username = ''
+            # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
-                logger.warning(f'The arguments are not numeric ({user_id}). Skipping...')
-                continue
+                username = user_id
+                logger.warning(f'The argument is not numeric ({username})')
+                logger.info(f'Trying to get user ID from username...')
+                user_id = str(await get_id_by_username(ctx, username, send_message = False))
+                logger.debug(f'user_id after get_id_by_username: {user_id}')
+                logger.debug(f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
+                if not user_id or user_id == None:
+                    logger.warning(f'Unable to get user ID for username: {username}')
+                    continue
 
             # if the user ID is in the users dict: 
             #   1. message the user they are being removed from watch list
             #   2. delete the key from the users dict
             #   3. send a confirmation message the user was removed
+            logger.debug(f'if user_id ({user_id}) in users: {bool(user_id in users)}')
             if user_id in users:
-                user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
-                user_message  += f' (||`{users[user_id].id}`||) from the watch list'
+                #user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
+                #user_message  += f' (||`{users[user_id].id}`||) from the watch list'
+                user_message   += f'Removed `{users[user_id].name}` from the watch list\n'
                 remove_message = f'You have been removed from the watch list'
                 if users[user_id].id != ctx.author.id:
-                    user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
+                    #user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
+                    user_message += f'(requested by `{ctx.author.name}`)\n'
                     remove_message += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
-                user_message =  f'User (||`{user_id}`||) is not on the watch list'
+                user_message +=  f'User `{username or user_id}` is not on the watch list\n'
                 
             logger.info(user_message)
-            # await ctx.send(user_message)
 
-            # # if command was received on a DM, also send output to a channel
-            # if ctx.message.channel.type == discord.ChannelType.private:
-            #     await send_channel_message(message = user_message)
+        await message_current_users(ctx, user_message)
+        return
 
-        current_users = ''
-        if users:
-            logger.info(f'Current Users:\n{users}')
-            current_users = f'\nWatch List:\n```properties\n'
-            for index, user_id in enumerate(users):
-                current_users += f'{users[user_id].name}\n'
-            current_users += f'```'
-        else:
-            logger.info(f'No current users watching')
-            current_users = f'\nNo current users watching'
-
-        if user_message and current_users:
-            complete_message = user_message + '\n' + current_users
-            logger.info(f'complete_message: {complete_message}')
-            await ctx.send(complete_message)
-
-            # if command was received on a DM, also send output to a channel
-            if ctx.message.channel.type == discord.ChannelType.private:
-                logger.debug(f'Sending message of current_users:\n{current_users}')
-                await send_channel_message(message = complete_message)
+    # send a DM to all watchers
+    @client.command(name = 'broadcast', aliases = ['dm'])
+    async def send_dm_to_all_watchers(ctx, message = 'test DM to all watchers'):
+        nonlocal users
+        await send_dms(users, message)
         return
 
     # READY
