@@ -8,7 +8,6 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Create command to test sending DMs to one or all users
 # - Create command to get User ID by name
 #   - Improve add_user and remove_user commands to support names
 # - Get GPIO pins working with light sensor
@@ -163,6 +162,7 @@ def main(args):
 
         return
 
+
     # COMMANDS
 
     # add user to watch list
@@ -277,6 +277,13 @@ def main(args):
             logger.info(user_message)
 
         await message_current_users(ctx, user_message)
+        return
+
+    # send a DM to all watchers
+    @client.command(name = 'broadcast', aliases = ['dm'])
+    async def send_dm_to_all_watchers(ctx, message = 'test DM to all watchers'):
+        nonlocal users
+        await send_dms(users, message)
         return
 
     # READY
