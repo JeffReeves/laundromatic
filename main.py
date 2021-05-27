@@ -187,6 +187,10 @@ def main(args):
             logger.debug(f'member:   {member}')
             logger.info(f'member.id: {member.id}')
             message = f'`{username}`\'s user ID is:\n`{str(member.id)}`'
+            logger.info(message)
+        else:
+            message = f'Unable to acquire user ID for {username}'
+            logger.warning(message)
 
         await ctx.send(message)
         return 
