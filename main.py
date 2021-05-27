@@ -245,7 +245,7 @@ def main(args):
                 users = await set_user_details(users)
                 #user_message  = f'Added `{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message += f' (||`{users[user_id].id}`||) to the watch list'
-                user_message  = f'Added `{users[user_id].name}` to the watch list'
+                user_message  += f'Added `{users[user_id].name}` to the watch list'
                 add_message   = f'You have been added to the watch list'
                 if users[user_id].id != ctx.author.id:
                     #user_message += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
@@ -255,7 +255,7 @@ def main(args):
             else:
                 #user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
-                user_message =  f'`{users[user_id].name} is already on the watch list'
+                user_message +=  f'`{users[user_id].name} is already on the watch list'
 
             logger.info(user_message)
 
@@ -308,7 +308,7 @@ def main(args):
             if user_id in users:
                 #user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message  += f' (||`{users[user_id].id}`||) from the watch list'
-                user_message   = f'Removed `{users[user_id].name}` from the watch list'
+                user_message   += f'Removed `{users[user_id].name}` from the watch list'
                 remove_message = f'You have been removed from the watch list'
                 if users[user_id].id != ctx.author.id:
                     #user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
@@ -317,7 +317,7 @@ def main(args):
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
-                user_message =  f'User (||`{user_id}`||) is not on the watch list'
+                user_message +=  f'User (||`{user_id}`||) is not on the watch list'
                 
             logger.info(user_message)
 
