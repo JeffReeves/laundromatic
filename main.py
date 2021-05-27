@@ -166,7 +166,7 @@ def main(args):
 
     # get user ID by username
     @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
-    async def get_id_by_username(ctx, username = ''):
+    async def get_id_by_username(ctx, username = '', send_message = True):
 
         user_id = None
 
@@ -177,7 +177,8 @@ def main(args):
             logger.debug(f'Using author {ctx.author.name} as argument')
             user_id = str(ctx.author.id)
             message = f'`{ctx.author.name}`\'s user ID is:\n`{user_id}`'
-            await ctx.send(message)
+            if send_message:
+                await ctx.send(message)
             return user_id
 
         logger.info(f'Attempting to find user ID for: {username}')
@@ -195,7 +196,8 @@ def main(args):
             message = f'Unable to acquire user ID for `{username}`'
             logger.warning(message)
 
-        await ctx.send(message)
+        if send_message:
+            await ctx.send(message)
         return user_id
 
 
@@ -224,7 +226,7 @@ def main(args):
             if not user_id.isnumeric():
                 logger.warning(f'The argument is not numeric ({user_id})')
                 logger.info(f'Trying to get user ID from username...')
-                user_id = await get_id_by_username(ctx, user_id)
+                user_id = await get_id_by_username(ctx, user_id, send_message = False)
 
                 if not user_id:
                     logger.warning(f'Unable to get user ID for username: {user_id}')
