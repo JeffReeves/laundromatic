@@ -167,7 +167,7 @@ def main(args):
 
     # get user ID by username
     @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
-    async def get_id_by_username(ctx, *username):
+    async def get_id_by_username(ctx, username = ''):
 
         # if no username was passed as an argument, 
         #   assume the user passed their own username
@@ -189,7 +189,7 @@ def main(args):
             message = f'`{username}`\'s user ID is:\n`{str(member.id)}`'
             logger.info(message)
         else:
-            message = f'Unable to acquire user ID for {username}'
+            message = f'Unable to acquire user ID for `{username}`'
             logger.warning(message)
 
         await ctx.send(message)
