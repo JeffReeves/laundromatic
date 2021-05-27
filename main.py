@@ -255,7 +255,7 @@ def main(args):
             else:
                 #user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
-                user_message +=  f'User (||`{username or user_id}`||) is already on the watch list\n'
+                user_message +=  f'User `{username or user_id}` is already on the watch list\n'
 
             logger.info(user_message)
 
@@ -321,7 +321,7 @@ def main(args):
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
-                user_message +=  f'User (||`{username or user_id}`||) is not on the watch list\n'
+                user_message +=  f'User `{username or user_id}` is not on the watch list\n'
                 
             logger.info(user_message)
 
