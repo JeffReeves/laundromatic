@@ -165,6 +165,33 @@ def main(args):
 
     # COMMANDS
 
+    # get user ID by username
+    @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
+    async def get_id_by_username(ctx, username):
+
+        # if no username was passed as an argument, 
+        #   assume the user passed their own username
+        if not username:
+            logger.debug('No argument passed to command')
+            logger.debug(f'Using author {ctx.author.name} as argument')
+            message = f'`{ctx.author.name}`\'s user ID is:\n`{str(user_id)}`'
+            await ctx.send(message)
+            return
+
+        logger.info(f'Attempting to find user ID for: {username}')
+
+        # get a member that matches the username, from all members of the guild
+        member = discord.utils.get(client.get_all_members(), name = username)
+
+        if member:
+            logger.debug(f'member:   {member}')
+            logger.info(f'member.id: {member.id}')
+            message = f'`{username}`\'s user ID is:\n`{str(member.id)}`'
+
+        await ctx.send(message)
+        return 
+
+
     # add user to watch list
     @client.command(name = 'watch', aliases = ['subscribe'])
     async def add_user_to_watchers(ctx, *user_ids):
