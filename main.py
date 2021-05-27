@@ -249,7 +249,7 @@ def main(args):
                 add_message   = f'You have been added to the watch list'
                 if users[user_id].id != ctx.author.id:
                     #user_message += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
-                    user_message += f'(requested by `{ctx.author.name}`)'
+                    user_message += f'(requested by `{ctx.author.name}`)\n'
                     add_message  += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = add_message)
             else:
@@ -312,7 +312,7 @@ def main(args):
                 remove_message = f'You have been removed from the watch list'
                 if users[user_id].id != ctx.author.id:
                     #user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
-                    user_message += f'(requested by `{ctx.author.name}`)'
+                    user_message += f'(requested by `{ctx.author.name}`)\n'
                     remove_message += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
