@@ -226,7 +226,7 @@ def main(args):
                 logger.warning(f'The argument is not numeric ({user_id})')
                 logger.info(f'Trying to get user ID from username...')
                 user_id = await get_id_by_username(ctx, user_id, send_message = False)
-
+                logger.debug(f'user_id after get_id_by_username: {user_id}')
                 if not user_id:
                     logger.warning(f'Unable to get user ID for username: {user_id}')
                     continue
@@ -296,7 +296,7 @@ def main(args):
                 logger.warning(f'The argument is not numeric ({user_id})')
                 logger.info(f'Trying to get user ID from username...')
                 user_id = await get_id_by_username(ctx, user_id, send_message = False)
-
+                logger.debug(f'user_id after get_id_by_username: {user_id}')
                 if not user_id:
                     logger.warning(f'Unable to get user ID for username: {user_id}')
                     continue
