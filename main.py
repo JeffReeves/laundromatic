@@ -145,9 +145,6 @@ def main(args):
             logger.info(f'No current users watching')
             current_users = f'\nNo current users watching'
 
-        if user_message:
-            user_message += '\n'
-
         if current_users:
             complete_message = user_message + current_users
             logger.info(f'complete_message: {complete_message}')
