@@ -234,7 +234,7 @@ def main(args):
             #   1. add the user ID as a new key
             #   2. fetch user details
             #   3. DM the user to let them know they've been added
-            logger.debug(f'if user_id not in users: {bool(user_id not in users)}')
+            logger.debug(f'if user_id ({user_id}) not in users: {bool(user_id not in users)}')
             if user_id not in users:
                 logger.info(f'User ID {user_id} not in users list')
                 users[user_id] = None
@@ -306,7 +306,7 @@ def main(args):
             #   1. message the user they are being removed from watch list
             #   2. delete the key from the users dict
             #   3. send a confirmation message the user was removed
-            logger.debug(f'if user_id in users: {bool(user_id in users)}')
+            logger.debug(f'if user_id ({user_id}) in users: {bool(user_id in users)}')
             if user_id in users:
                 #user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message  += f' (||`{users[user_id].id}`||) from the watch list'
