@@ -167,7 +167,7 @@ def main(args):
 
     # get user ID by username
     @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
-    async def get_id_by_username(ctx, username):
+    async def get_id_by_username(ctx, *username):
 
         # if no username was passed as an argument, 
         #   assume the user passed their own username
