@@ -220,12 +220,13 @@ def main(args):
 
             # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
-                logger.warning(f'The argument is not numeric ({user_id})')
+                username = user_id
+                logger.warning(f'The argument is not numeric ({username})')
                 logger.info(f'Trying to get user ID from username...')
-                user_id = str(await get_id_by_username(ctx, user_id, send_message = False))
+                user_id = str(await get_id_by_username(ctx, username, send_message = False))
                 logger.debug(f'user_id after get_id_by_username: {user_id}')
-                if not user_id:
-                    logger.warning(f'Unable to get user ID for username: {user_id}')
+                if not user_id or user_id == None:
+                    logger.warning(f'Unable to get user ID for username: {username}')
                     continue
 
             # if the user ID is not in the users dict, 
@@ -252,7 +253,7 @@ def main(args):
             else:
                 #user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
                 #user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
-                user_message +=  f'`{users[user_id].name} is already on the watch list\n'
+                user_message +=  f'User (||`{user_id or username}`||) is already on the watch list\n'
 
             logger.info(user_message)
 
@@ -290,12 +291,13 @@ def main(args):
 
             # if an argument wasn't numeric, try to get the user ID from the username
             if not user_id.isnumeric():
-                logger.warning(f'The argument is not numeric ({user_id})')
+                username = user_id
+                logger.warning(f'The argument is not numeric ({username})')
                 logger.info(f'Trying to get user ID from username...')
-                user_id = str(await get_id_by_username(ctx, user_id, send_message = False))
+                user_id = str(await get_id_by_username(ctx, username, send_message = False))
                 logger.debug(f'user_id after get_id_by_username: {user_id}')
-                if not user_id:
-                    logger.warning(f'Unable to get user ID for username: {user_id}')
+                if not user_id or user_id == None:
+                    logger.warning(f'Unable to get user ID for username: {username}')
                     continue
 
             # if the user ID is in the users dict: 
@@ -315,7 +317,7 @@ def main(args):
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
             else:
-                user_message +=  f'User (||`{user_id}`||) is not on the watch list\n'
+                user_message +=  f'User (||`{user_id or username}`||) is not on the watch list\n'
                 
             logger.info(user_message)
 
