@@ -8,7 +8,6 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Improve add_user and remove_user commands to support names
 # - Get GPIO pins working with light sensor
 
 
@@ -296,7 +295,7 @@ def main(args):
             if not user_id.isnumeric():
                 logger.warning(f'The argument is not numeric ({user_id})')
                 logger.info(f'Trying to get user ID from username...')
-                user_id = await get_id_by_username(ctx, user_id)
+                user_id = await get_id_by_username(ctx, user_id, send_message = False)
 
                 if not user_id:
                     logger.warning(f'Unable to get user ID for username: {user_id}')
