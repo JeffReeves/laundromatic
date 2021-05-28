@@ -66,7 +66,7 @@ def main(args):
     light_sensor = gpiozero.DigitalInputDevice(gpio_pin, pull_up = True)
 
     # datetime since laundry was last done
-    laundry_done_last = datetime.now() - timedelta(years = 30)
+    laundry_done_last = datetime.now() - timedelta(days = 365)
 
     # set log level
     logger.setLevel(loglevel)
