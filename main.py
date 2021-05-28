@@ -22,6 +22,7 @@ import json
 import base64
 import argparse
 import getpass
+import asyncio
 import gpiozero # type: ignore
 import discord
 from discord.ext import commands
@@ -172,6 +173,10 @@ def main(args):
         logger.debug(f'laundry is done, sending message: {message}')
         await send_dms(users, message = message)
         await send_channel_message(message = message)
+        return
+
+    def laundry_done_wrapper():
+        asyncio.run(message_laundry_done())
         return
 
     # COMMANDS
@@ -369,7 +374,7 @@ def main(args):
             await send_dms(users, message = online_message)
 
         # set up the watcher function on the GPIO light sensor
-        light_sensor.when_activated = await message_laundry_done
+        light_sensor.when_activated = laundry_done_wrapper
 
         return
 
