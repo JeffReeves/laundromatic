@@ -180,8 +180,9 @@ def main(args):
         logger.debug(f'client.loop: {client.loop}')
         #loop = asyncio.get_event_loop()
         #loop.run(message_laundry_done())
-        #client.loop.create_task(message_laundry_done())
-        client.loop.call_soon_threadsafe(message_laundry_done)
+        #client.loop.create_task(message_laundry_done()) #<-- works but is slow to trigger
+        #client.loop.call_soon_threadsafe(message_laundry_done)
+        client.loop.run(message_laundry_done())
         return
 
     # COMMANDS
