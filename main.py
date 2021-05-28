@@ -175,7 +175,7 @@ def main(args):
         format           = "%a, %b %-d @ %H:%M:%S (Arizona)" 
         arizona_datetime = time_done - timedelta(hours = 7) # Arizona is UTC -0700
         time_done_string = arizona_datetime.strftime(format)
-        message          = f'Washing cycle complete on {time_done_string}'
+        message          = f'Washing cycle complete on `{time_done_string}`'
         logger.debug(f'{message}')
         await send_dms(users, message = message)
         await send_channel_message(message = message)
