@@ -8,8 +8,9 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Get GPIO pins working with light sensor
-#   - add GPIO pin as an configurable item
+# - Add configurable entries for:
+#   - The GPIO pin used by the light sensor (default 4)
+#   - The timedelta that restricts "laundry done" messages (default 30 minutes)
 
 #==[ IMPORTS ]=============================================================================================================================
 
@@ -67,6 +68,7 @@ def main(args):
 
     # datetime since laundry was last done
     laundry_done_last = datetime.now() - timedelta(days = 365)
+    threshold_delta   = timedelta(minutes = 30)
 
     # set log level
     logger.setLevel(loglevel)
@@ -184,6 +186,7 @@ def main(args):
     def laundry_done_wrapper():
 
         nonlocal laundry_done_last
+        nonlocal threshold_delta
         logger.info(f'laundry was last done at: {str(laundry_done_last)}')
         
         now = datetime.now()
@@ -193,7 +196,7 @@ def main(args):
         logger.info(f'delta_since_last_done: {str(delta_since_last_done)}')
         logger.debug(delta_since_last_done)
 
-        threshold_delta = timedelta(minutes = 60)
+        
         logger.debug(f'threshold_delta: {threshold_delta}')
         logger.debug(f'delta_since_last_done > threshold_delta: {bool(delta_since_last_done > threshold_delta)}')
         if delta_since_last_done > threshold_delta:
