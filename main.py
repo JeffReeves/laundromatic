@@ -15,6 +15,7 @@ author: Jeff Reeves
 
 from pprint import pprint
 import logging
+import datetime
 import sys
 import os
 import traceback
@@ -63,6 +64,9 @@ def main(args):
 
     # initalize GPIO watching
     light_sensor = gpiozero.DigitalInputDevice(gpio_pin, pull_up = True)
+
+    # datetime since laundry was last done (defaults to 2 hours before start)
+    laundry_done_last = datetime.datetime.now() - datetime.timedelta(minutes = 120)
 
     # set log level
     logger.setLevel(loglevel)
@@ -176,11 +180,16 @@ def main(args):
         return
 
     def laundry_done_wrapper():
-        logger.debug('laundry done wrapper called')
-        logger.debug(f'client.loop: {client.loop}')
-        logger.debug(f'client.loop.all_tasks: {client.loop.all_tasks}')
-        client.loop.create_task(message_laundry_done()) #<-- works but is slow to trigger
-        logger.debug(f'2 client.loop.all_tasks: {client.loop.all_tasks}')
+        nonlocal laundry_done_last
+        logger.info(f'laundry done wrapper called at: {str(datetime.datetime.now())}')
+        minutes_since_last_done = (datetime.datetime.now() - laundry_done_last).seconds / 60
+        logger.debug(f'Minutes since last load was done: {str(minutes_since_last_done)}')
+        if minutes_since_last_done >= 60:
+            logger.debug(f'last laundry load was done over an hour ago')
+            laundry_done_last = datetime.datetime.now()
+            logger.debug(f'set new laundry_done_last: {laundry_done_last}')
+            logger.debug(f'client.loop: {client.loop}')
+            client.loop.create_task(message_laundry_done())
         return
 
     # COMMANDS
