@@ -8,13 +8,15 @@ author: Jeff Reeves
 """
 
 # TODO:
-# - Get GPIO pins working with light sensor
-
+# - Add configurable entries for:
+#   - The GPIO pin used by the light sensor (default 4)
+#   - The timedelta that restricts "laundry done" messages (default 30 minutes)
 
 #==[ IMPORTS ]=============================================================================================================================
 
 from pprint import pprint
 import logging
+from datetime import datetime, timedelta
 import sys
 import os
 import traceback
@@ -22,6 +24,8 @@ import json
 import base64
 import argparse
 import getpass
+import asyncio
+import gpiozero # type: ignore
 import discord
 from discord.ext import commands
 
@@ -57,6 +61,14 @@ def main(args):
     loglevel = args.loglevel            or logging.INFO
     watchers = args.watchers            or []
     users    = dict.fromkeys(watchers)  or {}
+    gpio_pin = 4
+
+    # initalize GPIO watching
+    light_sensor = gpiozero.DigitalInputDevice(gpio_pin, pull_up = True)
+
+    # datetime since laundry was last done
+    laundry_done_last = datetime.now() - timedelta(days = 365)
+    threshold_delta   = timedelta(minutes = 30)
 
     # set log level
     logger.setLevel(loglevel)
@@ -157,6 +169,43 @@ def main(args):
 
         return
 
+    # send message and dms when laundry is done
+    async def message_laundry_done(time_done = datetime.now()):
+        # include nonlocal users 
+        nonlocal users
+        logger.debug(f'nonlocal users: {users}')
+        format           = "%a, %b %-d @ %H:%M:%S (Arizona)" 
+        arizona_datetime = time_done - timedelta(hours = 7) # Arizona is UTC -0700
+        time_done_string = arizona_datetime.strftime(format)
+        message          = f'Washing cycle complete on `{time_done_string}`'
+        logger.debug(f'{message}')
+        await send_dms(users, message = message)
+        await send_channel_message(message = message)
+        return
+
+    def laundry_done_wrapper():
+
+        nonlocal laundry_done_last
+        nonlocal threshold_delta
+        logger.info(f'laundry was last done at: {str(laundry_done_last)}')
+        
+        now = datetime.now()
+        logger.info(f'laundry done wrapper called at: {str(now)}')
+
+        delta_since_last_done = now - laundry_done_last
+        logger.info(f'delta_since_last_done: {str(delta_since_last_done)}')
+        logger.debug(delta_since_last_done)
+
+        
+        logger.debug(f'threshold_delta: {threshold_delta}')
+        logger.debug(f'delta_since_last_done > threshold_delta: {bool(delta_since_last_done > threshold_delta)}')
+        if delta_since_last_done > threshold_delta:
+            logger.debug(f'last laundry load was done beyond the threshold duration')
+            laundry_done_last = datetime.now()
+            logger.debug(f'set new laundry_done_last value: {laundry_done_last}')
+            logger.debug(f'client.loop: {client.loop}')
+            client.loop.create_task(message_laundry_done(laundry_done_last))
+        return
 
     # COMMANDS
 
@@ -351,6 +400,9 @@ def main(args):
         if users:
             users = await set_user_details(users)
             await send_dms(users, message = online_message)
+
+        # set up the watcher function on the GPIO light sensor
+        light_sensor.when_activated = laundry_done_wrapper
 
         return
 
