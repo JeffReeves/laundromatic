@@ -176,6 +176,8 @@ def main(args):
         return
 
     def laundry_done_wrapper():
+        logger.debug('laundry done wrapper called')
+        logger.debug(f'client.loop: {client.loop}')
         #loop = asyncio.get_event_loop()
         #loop.run(message_laundry_done())
         #client.loop.create_task(message_laundry_done())
