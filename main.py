@@ -176,7 +176,8 @@ def main(args):
         return
 
     def laundry_done_wrapper():
-        asyncio.run(message_laundry_done())
+        loop = asyncio.get_event_loop()
+        loop.run(message_laundry_done())
         return
 
     # COMMANDS
