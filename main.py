@@ -15,7 +15,7 @@ author: Jeff Reeves
 
 from pprint import pprint
 import logging
-import datetime
+from datetime import datetime, timedelta
 import sys
 import os
 import traceback
@@ -65,8 +65,8 @@ def main(args):
     # initalize GPIO watching
     light_sensor = gpiozero.DigitalInputDevice(gpio_pin, pull_up = True)
 
-    # datetime since laundry was last done (defaults to 2 hours before start)
-    laundry_done_last = datetime.datetime.now() - datetime.timedelta(minutes = 120)
+    # datetime since laundry was last done
+    laundry_done_last = datetime(1989, 8, 10)
 
     # set log level
     logger.setLevel(loglevel)
@@ -168,13 +168,15 @@ def main(args):
         return
 
     # send message and dms when laundry is done
-    async def message_laundry_done():
+    async def message_laundry_done(time_done = datetime.now()):
         # include nonlocal users 
         nonlocal users
         logger.debug(f'nonlocal users: {users}')
-
-        message = 'Washing cycle complete'
-        logger.debug(f'laundry is done, sending message: {message}')
+        format           = "%a, %b %-d @ %H:%M:%S (Arizona)" 
+        arizona_datetime = time_done - timedelta(hours = 7) # Arizona is UTC -0700
+        time_done_string = arizona_datetime.strftime(format)
+        message          = f'Washing cycle complete on {time_done_string}'
+        logger.debug(f'{message}')
         await send_dms(users, message = message)
         await send_channel_message(message = message)
         return
