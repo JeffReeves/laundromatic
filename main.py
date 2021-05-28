@@ -9,7 +9,7 @@ author: Jeff Reeves
 
 # TODO:
 # - Get GPIO pins working with light sensor
-
+#   - add GPIO pin as an configurable item
 
 #==[ IMPORTS ]=============================================================================================================================
 
@@ -22,6 +22,7 @@ import json
 import base64
 import argparse
 import getpass
+import gpiozero # type: ignore
 import discord
 from discord.ext import commands
 
@@ -57,6 +58,10 @@ def main(args):
     loglevel = args.loglevel            or logging.INFO
     watchers = args.watchers            or []
     users    = dict.fromkeys(watchers)  or {}
+    gpio_pin = 4
+
+    # initalize GPIO watching
+    light_sensor = gpiozero.DigitalInputDevice(gpio_pin, pull_up = True)
 
     # set log level
     logger.setLevel(loglevel)
@@ -157,6 +162,17 @@ def main(args):
 
         return
 
+    # send message and dms when laundry is done
+    async def message_laundry_done():
+        # include nonlocal users 
+        nonlocal users
+        logger.debug(f'nonlocal users: {users}')
+
+        message = 'Washing cycle complete'
+        logger.debug(f'laundry is done, sending message: {message}')
+        await send_dms(users, message = message)
+        await send_channel_message(message = message)
+        return
 
     # COMMANDS
 
@@ -351,6 +367,9 @@ def main(args):
         if users:
             users = await set_user_details(users)
             await send_dms(users, message = online_message)
+
+        # set up the watcher function on the GPIO light sensor
+        light_sensor.when_activated = await message_laundry_done()
 
         return
 
