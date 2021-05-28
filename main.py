@@ -369,7 +369,7 @@ def main(args):
             await send_dms(users, message = online_message)
 
         # set up the watcher function on the GPIO light sensor
-        light_sensor.when_activated = await message_laundry_done()
+        light_sensor.when_activated = message_laundry_done
 
         return
 
