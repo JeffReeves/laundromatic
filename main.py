@@ -178,11 +178,9 @@ def main(args):
     def laundry_done_wrapper():
         logger.debug('laundry done wrapper called')
         logger.debug(f'client.loop: {client.loop}')
-        #loop = asyncio.get_event_loop()
-        #loop.run(message_laundry_done())
-        #client.loop.create_task(message_laundry_done()) #<-- works but is slow to trigger
-        #client.loop.call_soon_threadsafe(message_laundry_done)
-        client.loop.run(message_laundry_done())
+        logger.debug(f'client.loop.all_tasks: {client.loop.all_tasks}')
+        client.loop.create_task(message_laundry_done()) #<-- works but is slow to trigger
+        logger.debug(f'2 client.loop.all_tasks: {client.loop.all_tasks}')
         return
 
     # COMMANDS
