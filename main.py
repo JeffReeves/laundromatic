@@ -182,14 +182,24 @@ def main(args):
         return
 
     def laundry_done_wrapper():
+
         nonlocal laundry_done_last
-        logger.info(f'laundry done wrapper called at: {str(datetime.now())}')
-        minutes_since_last_done = (datetime.now() - laundry_done_last).seconds / 60
-        logger.debug(f'Minutes since last load was done: {str(minutes_since_last_done)}')
-        if minutes_since_last_done >= 60:
-            logger.debug(f'last laundry load was done over an hour ago')
+        logger.info(f'laundry was last done at: {str(laundry_done_last)}')
+        
+        now = datetime.now()
+        logger.info(f'laundry done wrapper called at: {str(now)}')
+
+        delta_since_last_done = now - laundry_done_last
+        logger.info(f'delta_since_last_done: {str(delta_since_last_done)}')
+        logger.debug(delta_since_last_done)
+
+        threshold_delta = timedelta(minutes = 60)
+        logger.debug(f'threshold_delta: {threshold_delta}')
+        logger.debug(f'delta_since_last_done > threshold_delta: {bool(delta_since_last_done > threshold_delta)}')
+        if delta_since_last_done > threshold_delta:
+            logger.debug(f'last laundry load was done beyond the threshold duration')
             laundry_done_last = datetime.now()
-            logger.debug(f'set new laundry_done_last: {laundry_done_last}')
+            logger.debug(f'set new laundry_done_last value: {laundry_done_last}')
             logger.debug(f'client.loop: {client.loop}')
             client.loop.create_task(message_laundry_done(laundry_done_last))
         return
