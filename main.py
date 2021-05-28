@@ -183,15 +183,15 @@ def main(args):
 
     def laundry_done_wrapper():
         nonlocal laundry_done_last
-        logger.info(f'laundry done wrapper called at: {str(datetime.datetime.now())}')
-        minutes_since_last_done = (datetime.datetime.now() - laundry_done_last).seconds / 60
+        logger.info(f'laundry done wrapper called at: {str(datetime.now())}')
+        minutes_since_last_done = (datetime.now() - laundry_done_last).seconds / 60
         logger.debug(f'Minutes since last load was done: {str(minutes_since_last_done)}')
         if minutes_since_last_done >= 60:
             logger.debug(f'last laundry load was done over an hour ago')
-            laundry_done_last = datetime.datetime.now()
+            laundry_done_last = datetime.now()
             logger.debug(f'set new laundry_done_last: {laundry_done_last}')
             logger.debug(f'client.loop: {client.loop}')
-            client.loop.create_task(message_laundry_done())
+            client.loop.create_task(message_laundry_done(laundry_done_last))
         return
 
     # COMMANDS
