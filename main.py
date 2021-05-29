@@ -257,7 +257,7 @@ def main(args):
         return
 
     # add user to watch list
-    @client.command(name = 'watch', aliases = ['add', 'subscribe'])
+    @client.command(name = 'add', aliases = ['watch', 'subscribe'])
     async def add_user_to_watchers(ctx, *user_ids_or_names):
 
         # if no user IDs or usernames were passed as arguments, 
@@ -323,7 +323,7 @@ def main(args):
     #     return
 
     # remove user from watch list
-    @client.command(name = 'stop', aliases = ['remove', 'unsubscribe', 'unwatch'])
+    @client.command(name = 'remove', aliases = ['unwatch', 'unsubscribe', 'stop'])
     async def remove_user_from_watchers(ctx, *user_ids_or_names):
 
         # if no user IDs or usernames were passed as arguments, 
