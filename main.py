@@ -7,15 +7,9 @@ purpose: Discord Bot that sends laundry status messages.
 author: Jeff Reeves
 """
 
-# TODO:
-# - Add command for getting the current list of watchers
-# - Add configurable entries for:
-#   - The GPIO pin used by the light sensor (default 4)
-#   - The timedelta that restricts "laundry done" messages (default 30 minutes)
 
 #==[ IMPORTS ]=============================================================================================================================
 
-from pprint import pprint
 import logging
 from datetime import datetime, timedelta
 import sys
@@ -55,21 +49,23 @@ logger.addHandler(file_handler)
 def main(args):
 
     # config
-    # use arguments if available, else get from user input
+    # use arguments if available, or set defaults
     token    = args.token               or getpass.getpass('Token: ')
     channel  = args.channel             or 'laundromatic'
-    prefix   = args.prefix              or '!'
+    delay    = args.delay               or timedelta(minutes = 30)
+    gpiopin  = args.gpiopin             or 4
     loglevel = args.loglevel            or logging.INFO
+    prefix   = args.prefix              or '!'
     watchers = args.watchers            or []
     users    = dict.fromkeys(watchers)  or {}
-    gpio_pin = 4
+    
 
     # initalize GPIO watching
-    light_sensor = gpiozero.DigitalInputDevice(gpio_pin, pull_up = True)
+    light_sensor = gpiozero.DigitalInputDevice(gpiopin, pull_up = True)
 
     # datetime since laundry was last done
     laundry_done_last = datetime.now() - timedelta(days = 365)
-    threshold_delta   = timedelta(minutes = 30)
+    threshold_delta   = timedelta(minutes = delay)
 
     # set log level
     logger.setLevel(loglevel)
@@ -77,8 +73,10 @@ def main(args):
     logger.debug(f'All arguments passed to script: {args}')
     logger.debug(f'token:    {token}')
     logger.debug(f'channel:  {channel}')
-    logger.debug(f'prefix:   {prefix}')
+    logger.debug(f'delay:    {delay}')
+    logger.debug(f'gpiopin:  {gpiopin}')
     logger.debug(f'loglevel: {loglevel}')
+    logger.debug(f'prefix:   {prefix}')
     logger.debug(f'watchers: {watchers}')
     logger.debug(f'users:    {users}')
 
@@ -94,40 +92,40 @@ def main(args):
                                    intents        = intents)
 
 
-    # CUSTOM FUNCTIONS
+    #--[ CUSTOM FUNCTIONS ]--------------------------------------------------------------------------------------------
 
     # sets user details for all users
     async def set_user_details(users):
-        user = None # clear user
+        user = None
         logger.debug(f'users: {users}')
         for index, user_id in enumerate(users):
             logger.debug(f'user id: {user_id}')
-            # if user has no data, fetch it
             if user_id in users:
-                logger.debug(f'user id ({user_id}) in users: {users}')
+                logger.debug( 'user id in users')
+                logger.debug(f'users[user_id]: {users[user_id]}')
+                logger.debug(f'bool:           {bool(users[user_id])}')
                 if not users[user_id]:
-                    logger.debug(f'users[user_id]: {users[user_id]} (bool: {bool(users[user_id])}')
                     user = await client.fetch_user(user_id)
                     if(user):
-                        logger.debug(f'user: {user}')
+                        logger.debug(f'acquired user details: {user}')
                         users[user_id] = user
-                        #users.update({ user_id: user })
                     else:
-                        logger.error(f'unable to acquire user by user_id: {user_id}')
+                        logger.error('unable to acquire user by user_id')
                 else:
-                    logger.debug(f'user already set: {user}')
+                    logger.debug('user already set')
         return users
 
     # send DM to a single user
     async def send_dm(user, message = 'test message'):
-        logger.debug(f'Sending DM to: {user}')
-        logger.debug(f'Message: {message}')
+        logger.debug(f'sending DM to: {user}')
+        logger.debug(f'message:       {message}')
         await user.send(message)
         return
 
     # send DMs to many users
     async def send_dms(users, message = 'test message'):
-        logger.debug('Sending DMs to all users')
+        logger.debug( 'sending DMs to many users')
+        logger.debug(f'users: {users}')
         for index, user_id in enumerate(users):
             await send_dm(users[user_id], message)
         return
@@ -139,27 +137,27 @@ def main(args):
         if channel_obj:
             logger.debug(f'channel:    {channel_obj}')
             logger.debug(f'channel.id: {channel_obj.id}')
-            #channel = client.get_channel(channel.id)
-            logger.info(f'Sending message to #{channel_obj}: {message}')
+            logger.info( f'Sending message to #{channel_obj}: {message}')
             await channel_obj.send(message)
         return
 
     # send list of current users
     async def message_current_users(ctx, user_message = ''):
-        current_users = ''
+        current_users = '\n'
         nonlocal users
         if users:
             logger.info(f'Current Users:\n{users}')
-            current_users = f'\nWatch List:\n```properties\n'
+            current_users      =  'Watch List:\n```properties\n'
             for index, user_id in enumerate(users):
                 current_users += f'{users[user_id].name} {users[user_id].id}\n'
-            current_users += f'```'
+            current_users     +=  '```'
         else:
-            logger.info(f'No current users watching')
-            current_users = f'\nNo current users watching'
+            no_users_message   = 'No current users watching'
+            current_users      = no_users_message
+            logger.info(no_users_message)
 
         if current_users:
-            complete_message = user_message + current_users
+            complete_message   = user_message + current_users
             logger.info(f'complete_message: {complete_message}')
             await ctx.send(complete_message)
 
@@ -167,14 +165,11 @@ def main(args):
             if ctx.message.channel.type == discord.ChannelType.private:
                 logger.debug(f'Sending message of current_users:\n{current_users}')
                 await send_channel_message(message = complete_message)
-
         return
 
     # send message and dms when laundry is done
     async def message_laundry_done(time_done = datetime.now()):
-        # include nonlocal users 
         nonlocal users
-        logger.debug(f'nonlocal users: {users}')
         format           = "%a, %b %-d @ %H:%M:%S (Arizona)" 
         arizona_datetime = time_done - timedelta(hours = 7) # Arizona is UTC -0700
         time_done_string = arizona_datetime.strftime(format)
@@ -184,31 +179,32 @@ def main(args):
         await send_channel_message(message = message)
         return
 
+    # wrapper function to call message_laundry_done
+    #   NOTE: needed by gpiozero, since it can't await async functions
     def laundry_done_wrapper():
 
         nonlocal laundry_done_last
         nonlocal threshold_delta
-        logger.info(f'laundry was last done at: {str(laundry_done_last)}')
         
         now = datetime.now()
-        logger.info(f'laundry done wrapper called at: {str(now)}')
-
         delta_since_last_done = now - laundry_done_last
-        logger.info(f'delta_since_last_done: {str(delta_since_last_done)}')
-        logger.debug(delta_since_last_done)
 
-        
-        logger.debug(f'threshold_delta: {threshold_delta}')
-        logger.debug(f'delta_since_last_done > threshold_delta: {bool(delta_since_last_done > threshold_delta)}')
+        logger.info( f'laundry done wrapper called at: {str(now)}')
+        logger.info( f'laundry was last done at:       {str(laundry_done_last)}')
+        logger.info( f'delta_since_last_done:          {str(delta_since_last_done)}')
+        logger.debug(f'threshold_delta:                {threshold_delta}')
+        logger.debug(f'over threshold:                 {bool(delta_since_last_done > threshold_delta)}')
+
         if delta_since_last_done > threshold_delta:
+            laundry_done_last = now
             logger.debug(f'last laundry load was done beyond the threshold duration')
-            laundry_done_last = datetime.now()
             logger.debug(f'set new laundry_done_last value: {laundry_done_last}')
-            logger.debug(f'client.loop: {client.loop}')
-            client.loop.create_task(message_laundry_done(laundry_done_last))
+            logger.debug(f'client.loop:                     {client.loop}')
+            client.loop.create_task(message_laundry_done(now))
         return
 
-    # COMMANDS
+
+    #--[ COMMANDS ]----------------------------------------------------------------------------------------------------
 
     # get user ID by username
     @client.command(name = 'id', aliases = ['get-id', 'user-id', 'uid'])
@@ -219,22 +215,22 @@ def main(args):
         # if no username was passed as an argument, 
         #   assume the user passed their own username
         if not username:
-            logger.debug('No argument passed to command')
-            logger.debug(f'Using author {ctx.author.name} as argument')
+            logger.debug( 'no argument passed to command')
+            logger.debug(f'netting argument to author: {ctx.author.name}')
             user_id = str(ctx.author.id)
             message = f'`{ctx.author.name}`\'s user ID is:\n`{user_id}`'
             if send_message:
                 await ctx.send(message)
             return user_id
 
-        logger.info(f'Attempting to find user ID for: {username}')
+        logger.info(f'attempting to find user ID for: {username}')
 
         # get a member that matches the username, from all members of the guild
         member = discord.utils.get(client.get_all_members(), name = username)
 
         if member:
-            logger.debug(f'member:   {member}')
-            logger.info(f'member.id: {member.id}')
+            logger.debug(f'member:    {member}')
+            logger.info( f'member.id: {member.id}')
             user_id = member.id
             message = f'`{username}`\'s user ID is:\n`{user_id}`'
             logger.info(message)
@@ -244,8 +240,21 @@ def main(args):
 
         if send_message:
             await ctx.send(message)
+
         return user_id
 
+    # list all current watchers
+    @client.command(name = 'watchlist', aliases = ['watchers', 'list', 'users'])
+    async def list_watchers(ctx):
+        await message_current_users(ctx)
+        return
+
+    # send a DM to all watchers
+    @client.command(name = 'broadcast', aliases = ['dm'])
+    async def send_dm_to_all_watchers(ctx, message = 'test DM to all watchers'):
+        nonlocal users
+        await send_dms(users, message)
+        return
 
     # add user to watch list
     @client.command(name = 'watch', aliases = ['add', 'subscribe'])
@@ -254,7 +263,7 @@ def main(args):
         # if no user IDs or usernames were passed as arguments, 
         #   assume the user passed their own user ID
         if not user_ids_or_names:
-            logger.debug('No arguments passed to command')
+            logger.debug( 'No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
             user_ids_or_names = [ str(ctx.author.id) ]
 
@@ -273,10 +282,10 @@ def main(args):
             if not user_id.isnumeric():
                 username = user_id
                 logger.warning(f'The argument is not numeric ({username})')
-                logger.info(f'Trying to get user ID from username...')
+                logger.info(   f'Trying to get user ID from username...')
                 user_id = str(await get_id_by_username(ctx, username, send_message = False))
-                logger.debug(f'user_id after get_id_by_username: {user_id}')
-                logger.debug(f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
+                logger.debug(  f'user_id after get_id_by_username: {user_id}')
+                logger.debug(  f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
                 if not user_id or user_id == None:
                     logger.warning(f'Unable to get user ID for username: {username}')
                     continue
@@ -290,21 +299,14 @@ def main(args):
                 logger.info(f'User ID {user_id} not in users list')
                 users[user_id] = None
                 logger.debug(f'Users: {users}')
-                # TODO:
-                # - improve time complexity with setting user details
                 users = await set_user_details(users)
-                #user_message  = f'Added `{users[user_id].name}#{users[user_id].discriminator}`'
-                #user_message += f' (||`{users[user_id].id}`||) to the watch list'
-                user_message  += f'Added `{users[user_id].name}` to the watch list\n'
+                user_message += f'Added `{users[user_id].name}` to the watch list\n'
                 add_message   = f'You have been added to the watch list'
                 if users[user_id].id != ctx.author.id:
-                    #user_message += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
                     user_message += f'(requested by `{ctx.author.name}`)\n'
                     add_message  += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = add_message)
             else:
-                #user_message =  f'`{users[user_id].name}#{users[user_id].discriminator}`'
-                #user_message += f' (||`{users[user_id].id}`||) is already on the watch list'
                 user_message +=  f'User `{username or user_id}` is already on the watch list\n'
 
             logger.info(user_message)
@@ -327,7 +329,7 @@ def main(args):
         # if no user IDs or usernames were passed as arguments, 
         #   assume the user passed their own user ID
         if not user_ids_or_names:
-            logger.debug('No arguments passed to command')
+            logger.debug( 'No arguments passed to command')
             logger.debug(f'Using author ID {ctx.author.id} as argument')
             user_ids_or_names = [ str(ctx.author.id) ]
 
@@ -346,10 +348,10 @@ def main(args):
             if not user_id.isnumeric():
                 username = user_id
                 logger.warning(f'The argument is not numeric ({username})')
-                logger.info(f'Trying to get user ID from username...')
+                logger.info(   f'Trying to get user ID from username...')
                 user_id = str(await get_id_by_username(ctx, username, send_message = False))
-                logger.debug(f'user_id after get_id_by_username: {user_id}')
-                logger.debug(f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
+                logger.debug(  f'user_id after get_id_by_username: {user_id}')
+                logger.debug(  f'if not user_id ({bool(not user_id)}) or user_id == None ({bool(user_id == None)}): ')
                 if not user_id or user_id == None:
                     logger.warning(f'Unable to get user ID for username: {username}')
                     continue
@@ -360,13 +362,10 @@ def main(args):
             #   3. send a confirmation message the user was removed
             logger.debug(f'if user_id ({user_id}) in users: {bool(user_id in users)}')
             if user_id in users:
-                #user_message   = f'Removed `{users[user_id].name}#{users[user_id].discriminator}`'
-                #user_message  += f' (||`{users[user_id].id}`||) from the watch list'
                 user_message   += f'Removed `{users[user_id].name}` from the watch list\n'
-                remove_message = f'You have been removed from the watch list'
+                remove_message  = f'You have been removed from the watch list'
                 if users[user_id].id != ctx.author.id:
-                    #user_message   += f'\n- requested by `{ctx.author}` (||`{ctx.author.id}`||)'
-                    user_message += f'(requested by `{ctx.author.name}`)\n'
+                    user_message   += f'(requested by `{ctx.author.name}`)\n'
                     remove_message += f' by `{ctx.author.name}`'
                 await send_dm(users[user_id], message = remove_message)
                 del users[user_id]
@@ -378,21 +377,9 @@ def main(args):
         await message_current_users(ctx, user_message)
         return
 
-    # list all current watchers
-    @client.command(name = 'watchlist', aliases = ['watchers', 'list', 'users'])
-    async def list_watchers(ctx):
-        await message_current_users(ctx)
-        return
 
-    # send a DM to all watchers
-    @client.command(name = 'broadcast', aliases = ['dm'])
-    async def send_dm_to_all_watchers(ctx, message = 'test DM to all watchers'):
-        nonlocal users
-        await send_dms(users, message)
-        return
+    #--[ READY ]-------------------------------------------------------------------------------------------------------
 
-
-    # READY
     @client.event
     async def on_ready():
 
@@ -415,26 +402,27 @@ def main(args):
         return
 
 
-    # DISCONNECT
+    #--[ DISCONNECT ]--------------------------------------------------------------------------------------------------
+
     @client.event
     async def on_disconnect():
         logger.warning(f'{client.user} disconnected from Discord')
         return
 
 
-    # ERROR
+    #--[ ERROR ]-------------------------------------------------------------------------------------------------------
+
     @client.event
     async def on_error(event, *args, **kwargs):
-        message = args[0] # get the message object
-        logger.error(f'Error Message: {message}')
-        logger.error(traceback.format_exc())
-        error_message  = f'{client.user} has encountered an error. ' 
-        error_message += 'Check server log for details.'
+        message = args[0]
+        logger.error(f'Error Message: {message}\n{traceback.format_exc()}')
+        error_message  = f'{client.user} has encountered an error. Check server log for details.' 
         await send_dms(users, message = error_message)
         return
 
 
-    # MESSAGE
+    #--[ MESSAGE ]-----------------------------------------------------------------------------------------------------
+
     @client.event
     async def on_message(message):
 
@@ -442,7 +430,8 @@ def main(args):
         if message.author == client.user:
             return
 
-        # process commands (required when using the on_message event)
+        # process commands 
+        #   NOTE: required when using the on_message event
         await client.process_commands(message)
 
     if token:
@@ -459,53 +448,69 @@ if __name__ == "__main__":
 
     # important values
     token    = None # REQUIRED
-    channel  = None # Defaults to '#laundromatic' in main()
-    prefix   = None # Defaults to '!'  in main()   
-    loglevel = None # Defaults to 'info' in main()
+    channel  = None # Defaults in main() to '#laundromatic'
+    delay    = None # Defaults in main() to '30' (minute timedelta)
+    gpiopin  = None # Defaults in main() to '4'
+    loglevel = None # Defaults in main() to 'info'
+    prefix   = None # Defaults in main() to '!'   
     watchers = []   # Optional - user IDs
 
-    # the values get set from (in order):
+    # the above values get set from (in order):
     #   1. JSON config file
     #   2. environment variables
-    #   3. arguments passed via command line
+    #   3. command line arguments
     #   4. prompts to the user - in main()
-    #   5. using commands in a direct message (DM) or a desired channel
+    #   5. using bot commands in a direct message (DM) or management channel
 
 
-    # 1. JSON config file
+    #--[ 1. JSON CONFIG ]----------------------------------------------------------------------------------------------
+
     config_file = 'config.json'
     if os.path.exists(config_file):
         with open(config_file) as json_config_file:
             config = json.load(json_config_file)
-            if 'token' in config:
-                token = config['token']
+            if 'token'    in config:
+                token     = config['token']
 
-            if 'channel' in config:
-                channel = config['channel']
+            if 'channel'  in config:
+                channel   = config['channel']
 
-            if 'prefix' in config:
-                prefix = config['prefix']
+            if 'delay'    in config:
+                delay     = config['delay']
+
+            if 'gpiopin'  in config:
+                gpiopin   = config['gpiopin']
 
             if 'loglevel' in config:
-                loglevel = config['loglevel']
+                loglevel  = config['loglevel']
+
+            if 'prefix'   in config:
+                prefix    = config['prefix']
 
             if 'watchers' in config:
                 if all(config['watchers']):
                     watchers = config['watchers']
 
 
-    # 2. environment variables
+    #--[ 2. ENVIRONMENT VARIABLES ]------------------------------------------------------------------------------------
+
     if not token:
         token    = os.environ.get('LAUNDROMATIC_TOKEN')
 
     if not channel:
         channel  = os.environ.get('LAUNDROMATIC_CHANNEL')
 
-    if not prefix:
-        prefix   = os.environ.get('LAUNDROMATIC_PREFIX')
+    if not delay:
+        delay    = os.environ.get('LAUNDROMATIC_DELAY')
+
+    if not gpiopin:
+        gpiopin  = os.environ.get('LAUNDROMATIC_GPIOPIN')    
 
     if not loglevel:
         loglevel = os.environ.get('LAUNDROMATIC_LOGLEVEL')
+
+    if not prefix:
+        prefix   = os.environ.get('LAUNDROMATIC_PREFIX')
 
     if not watchers:
         watchers = os.environ.get('LAUNDROMATIC_WATCHERS')
@@ -513,7 +518,8 @@ if __name__ == "__main__":
             watchers = watchers.split() # convert space separated string to list
 
 
-    # 3. arguments on command line
+    #--[ 3. COMMAND LINE ARGUMENTS ]-----------------------------------------------------------------------------------
+
     parser = argparse.ArgumentParser()
 
     # token
@@ -541,12 +547,23 @@ if __name__ == "__main__":
                         type = str,
                         help = 'Channel Name for management')
 
-    # prefix
-    parser.add_argument('-p',
-                        '--prefix',
-                        dest = 'prefix',
-                        type = str,
-                        help = 'Prefix for commands')
+    # delay
+    def set_delay_timedelta(minutes):
+        return timedelta(minutes = int(minutes) or 30)
+
+    parser.add_argument('-d',
+                        '--delay',
+                        dest = 'delay',
+                        type = set_delay_timedelta,
+                        help = 'Delay (minutes) between "complete" messages')
+
+    # gpiopin
+    parser.add_argument('-g',
+                        '--gpio',
+                        '--pin',
+                        dest = 'gpiopin',
+                        type = int,
+                        help = 'GPIO pin for digital output (DO) from light sensor (LDR)')
 
     # loglevels
     loglevels = {
@@ -570,6 +587,13 @@ if __name__ == "__main__":
                         type = set_log_level,
                         help = f"Logging Level ({' | '.join(loglevels.keys())})")
 
+    # prefix
+    parser.add_argument('-p',
+                        '--prefix',
+                        dest = 'prefix',
+                        type = str,
+                        help = 'Prefix for commands')
+
     # watchers
     group_watchers = parser.add_mutually_exclusive_group(required = False)
     
@@ -590,13 +614,14 @@ if __name__ == "__main__":
     # parse arguments
     args, unknown = parser.parse_known_args()
 
-    # set args values, if passed to argparse
-    #   or use values set by environment variable or config file
-    #   if no values found, use the defaults set at the beginning
+    # set args values
     args.token      = args.token    or token
     args.channel    = args.channel  or channel
-    args.prefix     = args.prefix   or prefix
+    args.delay      = args.delay    or delay
+    args.gpiopin    = args.gpiopin  or gpiopin    
     args.loglevel   = args.loglevel or loglevel
+    args.prefix     = args.prefix   or prefix
     args.watchers   = args.watchers or watchers
 
+    # pass all args to main
     main(args)
