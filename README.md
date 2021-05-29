@@ -16,7 +16,7 @@ This application requires:
 - At least one [Discord user ID](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-) for private messages (PMs).
 - A Raspberry Pi 3b or 4b
 - A photoresistor with DO (digital output)
-- Python 3
+- Python 3 (recommending 3.8+)
 
 ### Clone Project and Install Packages
 
@@ -50,19 +50,23 @@ Coming Soon&trade;
 
 ## How to Use
 
+### Configuration
+
 This bot will require that you provide it with at least your **bot token**.
 
-Additional values can be supplied if desired, such as:
+Additional optional values can be supplied if desired, such as:
 - The Discord `channel` to manage the bot from (defaults to: '`landromatic`') 
-- The `prefix` used for all commands (defaults to: '`!`')
+- The `delay` required between when completed messages can be sent (defaults to: `30` (minutes))
+- The `gpiopin` used for the photoresistor's digital output (defaults to: `4`)
 - The `loglevel` to use for logging (defaults to: '`info`')
-- The Discord user ID(s) for any `watchers` (can be added with `!watch` command after starting the bot)
+- The `prefix` used for all commands (defaults to: '`!`')
+- The Discord user ID(s) for any `watchers` (they receive direct messages (DMs) of status changes)
 
 These items can be provided in three ways.
 
 You only need to use ***__ONE__*** of these methods, but you can mix-and-match if you'd like.
 
-1. Copy the `config.example.json` file to `config.json`, and then add your token and user ID values to it:
+1. Copy the `config.example.json` file to `config.json`, and then add your token and other desired values:
 
     ```sh
     cp config.example.json config.json
@@ -74,50 +78,55 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     ```json
     {
-        "token":    "your-bot-token-here",
+        "token":    "REQUIRED-your-bot-token-here",
         "channel":  "laundromatic",
+        "delay":    30,
+        "gpiopin":  4,
+        "loglevel": "info",
         "prefix":   "!",
-        "loglevel": "INFO",
         "watchers": [
-            "your-user-id-here"
+            "optional-your-user-id-here"
         ]
     }
     ```
 
-    *NOTE: Additional user IDs can be added to the "watchers" list (notice the commas):*
+    *NOTE: Additional user IDs can be added to the "watchers" list (notice the trailing commas):*
 
     ```json
     {
-        "token":    "your-bot-token-here",
+        "token":    "REQUIRED-your-bot-token-here",
         "channel":  "laundromatic",
+        "delay":    30,
+        "gpiopin":  4,
+        "loglevel": "info",
         "prefix":   "!",
-        "loglevel": "INFO",
         "watchers": [
-            "your-user-id-here",
-            "additional-user-id-here",
-            "as-many-as-you-want"
+            "optional-your-user-id-here",
+            "optional-additional-user-id-here",
+            "optional-as-many-as-you-want"
         ]
     }
     ```
 
-2. Provide the token and watchers list as environment variables:
+2. Provide the token and other desired values as environment variables:
 
     Run the following on the command line:
 
     ```sh
-    # do not add spaces before or after the "=" (equal sign)
-    export LAUNDROMATIC_TOKEN='token-goes-here'
+    # NOTE: do not add spaces before or after the "=" (equal sign)
+    export LAUNDROMATIC_TOKEN='REQUIRED-token-goes-here'
     export LAUNDROMATIC_CHANNEL='laundromatic'
-    export LAUNDROMATIC_PREFIX='!'
+    export LAUNDROMATIC_DELAY=30
+    export LAUNDROMATIC_GPIOPIN='4'
     export LAUNDROMATIC_LOGLEVEL='info'
-    export LAUNDROMATIC_WATCHERS='user-id-one user-id-two' # space-separated list
+    export LAUNDROMATIC_PREFIX='!'
+    export LAUNDROMATIC_WATCHERS='optional-user-id-one optional-user-id-two' # space-separated list
     ```
 
     For added security, use `read` to hide sensitive values from command history:
 
     ```sh
     read -s -p "Token: " LAUNDROMATIC_TOKEN && export LAUNDROMATIC_TOKEN
-    read -s -p "Watchers: " LAUNDROMATIC_WATCHERS && export LAUNDROMATIC_WATCHERS
     ```
 
 3. Pass the token (or base64 encoded token) and watcher/watchers via command line arguments:
@@ -128,8 +137,10 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     [-h | --help]
     (-t TOKEN    | -b           TOKEN   )
     [-c CHANNEL  | --channel    CHANNEL ]
-    [-p PREFIX   | --prefix     PREFIX  ]
+    [-d DELAY    | --delay      DELAY   ]
+    [-g GPIOPIN  | --gpiopin    GPIOPIN ]
     [-l LOGLEVEL | --loglevel   LOGLEVEL] 
+    [-p PREFIX   | --prefix     PREFIX  ]
     [-w WATCHER  | --watcher    WATCHER | --watchers WATCHERS [WATCHERS ...]]
 
     -h, --help
@@ -140,10 +151,14 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
                             Token (base64)
     -c CHANNEL, --channel CHANNEL
                             Channel Name for management
-    -p PREFIX, --prefix PREFIX
-                            Token (base64)
+    -d DELAY, --delay DELAY
+                            Delay (minutes) between "complete" messages
+    -g GPIOPIN, --gpiopin GPIOPIN
+                            GPIO pin for digital output (DO) from light sensor (LDR)
     -l, --loglevel
                             Logging Level (debug | info | warning | error | critical)
+    -p PREFIX, --prefix PREFIX
+                            Token (base64)
     -w WATCHER, --watcher WATCHER
                             User ID of Watcher (can be used multiple times) 
     --watchers WATCHERS [WATCHERS ...]
@@ -152,30 +167,27 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
 
     An example of running the script:
 
+    Long argument style:
+
     ```sh
-    ./main.py --token 'my-token-goes-here' --channel 'my-bot-management-channel' --prefix '!'  --watcher 'my-user-id' --loglevel 'debug'  --watcher 'some-other-user-id'
+    ./main.py --token 'REQUIRED-token-goes-here' --channel 'laundromatic' --delay '30' --gpiopin '4' --prefix '!'  --loglevel 'debug' --watcher 'optional-my-user-id' --watcher 'optional-some-other-user-id'
+    ```
+
+    Short argument style:
+
+    ```sh
+    ./main.py -t 'REQUIRED-token-goes-here' -c 'laundromatic' -d '30' -g '4' -p '!' -l 'debug' -w 'optional-my-user-id' -w 'optional-some-other-user-id'
     ```
 
     A few more examples of using command line arguments:
 
     ```sh
-    ./main.py # if values are already provided in config.json and/or environment variables
+    # if values are already provided in config.json and/or environment variables
+    ./main.py 
 
-    ./main.py --base64_token 'base64-encoded-token' --watchers 'my-user-id some-other-user-id'
+    # base64 encoded tokens are supported too
+    ./main.py --base64_token 'REQUIRED-base64-encoded-token'
 
-    ./main.py --token 'my-token-goes-here' --watcher 'my-user-id' --watcher 'some-other-user-id'--loglevel 'debug'
-
-    ./main.py -t 'my-token-goes-here' -c 'my-bot-management-channel' -p '!' -l 'error' -w 'my-user-id'
+    # watchers argement accepts a space separated list, and can replace multiple watcher/w arguments
+    ./main.py --token 'REQUIRED-token-goes-here' --watchers 'optional-my-user-id optional-some-other-user-id'
     ```
-
-
-## TODO
-
-Things I'd like to get around to, eventually...
-
-0. ~~Write instructions for setup and use.~~
-1. ~~Possibly add config file parsing.~~
-2. ~~Add logging.~~
-3. Add tests to verify code works as expected with changes.
-4. Modularize the code into parts for easier maintenance.
-5. Containerize code and put into image repo.
