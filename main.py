@@ -445,45 +445,6 @@ def main(args):
         # process commands (required when using the on_message event)
         await client.process_commands(message)
 
-        # # check for command prefix
-        # if message.content.startswith(prefix):
-
-        #     # debugging
-        #     logger.debug(f'message: {message}')
-        #     logger.debug(f'message.author.id: {message.author.id}')
-        #     logger.debug(f'client.user: {client.user}')
-        #     logger.debug(f'message.channel: {message.channel}')
-        #     logger.debug(f'message.channel.type: {message.channel.type}')
-        #     logger.debug(f'message: {message}')
-
-        #     # # general commands
-        #     # if message.content.startswith(prefix + 'watch'):
-        #     #     await message.channel.send('Adding you to watch')
-
-        #     # if message.content.startswith(prefix + 'stop'):
-        #     #     await message.channel.send('Hello!')
-
-        #     # check if private message
-        #     if message.channel.type == discord.ChannelType.private:
-        #         logger.debug('Received a private message')
-
-        #         # send PM to the author
-        #         #await message.author.send('👀 I see you 👍')
-        #         #user = await get_user_by_id(message.author.id)
-        #         #await send_dm(user, message = '👀 I see you 👍')
-
-        #         # call commands
-        #         await client.process_commands(message)
-
-        #     else:
-        #         logger.debug(f'message.channel.name: {message.channel.name}')
-
-        #         # check if in '#laundromatic' channel
-        #         if message.channel.name == 'laundromatic':
-        #             logger.debug('Message received in #laundromatic channel')
-        #             # call commands
-        #             await client.process_commands(message)
-
     if token:
         client.run(token)
     else:
