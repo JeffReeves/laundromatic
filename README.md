@@ -191,3 +191,65 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     # watchers argement accepts a space separated list, and can replace multiple watcher/w arguments
     ./main.py --token 'REQUIRED-token-goes-here' --watchers 'optional-my-user-id optional-some-other-user-id'
     ```
+
+### Bot Commands
+
+There are several supported bot commands that can be used once the bot is online.
+
+The commands may be ran within the: 
+
+1. Main management channel (defined in configuration above, default '`#laundromatic`')
+2. Direct message (DM) window with the bot.
+
+The commands must be prefixed by the assigned prefix (also defined in the configuration above, default '`!`').
+
+NOTE: For the sake of readability, the following details on each command will use the default prefix.
+
+#### Get User ID by Name
+
+Provides a message with the user ID of any username passed to it.
+
+NOTE: The username field can be left blank if you wish to get your own user ID.
+
+Command: `!id [username]`
+
+Aliases: `!get-id`, `!user-id`, `!uid`
+
+
+#### List Watch List
+
+Provides a message of all current users on the watch list.
+
+Command: `!watchlist`
+
+Aliases: `!watchers`, `!list`, `!users`
+
+#### Send DMs from Bot to All Watchers
+
+Sends a direct message (DM) to all current users on the watch list.
+
+Provide the message you wish to send within quotes.
+
+Command: `!broadcast "your message"`
+
+Aliases: `!dm`
+
+#### Add User to Watch List
+
+Adds a user or users to the watch list.
+
+The command accepts user IDs and usernames (without the discriminator `#<numbers>` part of a full username).
+
+Command: `!add ([username-or-id] ... [additional-username-or-id])`
+
+Aliases: `!watch`, `!subscribe`
+
+#### Remove User from Watch List
+
+Removes a user or users from the watch list.
+
+The command accepts user IDs and usernames (without the discriminator `#<numbers>` part of a full username).
+
+Command: `!remove ([username-or-id] ... [additional-username-or-id])`
+
+Aliases: `!unwatch`, `!unsubscribe`, `!stop`
