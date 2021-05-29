@@ -8,6 +8,7 @@ author: Jeff Reeves
 """
 
 # TODO:
+# - Add command for getting the current list of watchers
 # - Add configurable entries for:
 #   - The GPIO pin used by the light sensor (default 4)
 #   - The timedelta that restricts "laundry done" messages (default 30 minutes)
@@ -375,6 +376,12 @@ def main(args):
             logger.info(user_message)
 
         await message_current_users(ctx, user_message)
+        return
+
+    # list all current watchers
+    @client.command(name = 'watchlist', aliases = ['watchers', 'list', 'users'])
+    async def list_watchers(ctx):
+        await message_current_users()
         return
 
     # send a DM to all watchers
