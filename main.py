@@ -381,7 +381,7 @@ def main(args):
     # list all current watchers
     @client.command(name = 'watchlist', aliases = ['watchers', 'list', 'users'])
     async def list_watchers(ctx):
-        await message_current_users()
+        await message_current_users(ctx)
         return
 
     # send a DM to all watchers
@@ -390,6 +390,7 @@ def main(args):
         nonlocal users
         await send_dms(users, message)
         return
+
 
     # READY
     @client.event
