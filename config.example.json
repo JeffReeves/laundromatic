@@ -1,8 +1,10 @@
 {
     "token":    "",
     "channel":  "laundromatic",
-    "prefix":   "!",
+    "delay":    30,
+    "gpiopin":  4,
     "loglevel": "info",
+    "prefix":   "!",
     "watchers": [
         ""
     ]
