@@ -1,9 +1,22 @@
 # Laundromatic
 
-Discord Bot that sends laundry status messages.
-Built for use with a Raspberry Pi + photoresistor (light sensor) attached via GPIO pins.
+Discord Bot that let's you and others know when washing is done.
 
-![Laundromatic](assets/laundromatic-256.png)
+Built for use with a Raspberry Pi + Photosensitive (light) Sensor Module 
+attached via GPIO pins.
+
+![Laundromatic](assets/laundromatic-256.png)&nbsp;
+![Setup Example](assets/setup-example-glamor-shot.jpg)
+
+## Example of Use
+
+Here is a brief example use:
+
+![Example Run Channel](assets/example-run-channel.png)
+
+This is what that direct messages look like as a watcher:
+
+![Example Run DM](assets/example-run-dm.png)
 
 ## How to Setup
 
@@ -38,7 +51,32 @@ This application requires:
     source venv/bin/activate
     ```
 
-4. Install pip packages from requirements.txt:
+4. Ensure you have GPIO pin access:
+
+    For **Raspberry Pi OS** (formerly "Raspbian"):
+
+    ```sh
+    sudo usermod -a -G gpio pi  # replace 'pi' with your username
+    ```
+
+    For **Ubuntu Server 20.04**:
+
+    ```sh
+    sudo su -
+    echo 'KERNEL=="gpiomem", OWNER="root", GROUP="gpio"' > /etc/udev/rules.d/90-gpio.rules
+    groupadd -f --system gpio
+    usermod -a -G gpio ubuntu # replace 'ubuntu' with your username
+    apt-get install gcc python3-dev python3-gpiozero
+    sync && reboot
+    ```
+
+5. Upgrade pip, setuptools, and wheel:
+
+    ```sh
+    pip3 install pip setuptools wheel --upgrade
+    ```
+
+6. Install pip packages from requirements.txt:
 
     ```sh 
     pip install -r requirements.txt
@@ -46,7 +84,65 @@ This application requires:
 
 ### Configure Hardware
 
-Coming Soon&trade;
+This is an example of how my final placement looked with everything wired up:
+
+![Photosensitive Sensor Module](assets/setup-example.png)
+
+**Photosensitive Sensor Module**
+
+The only hardware needed outside of the Raspberry Pi itself is a 
+photoresistor / light detecting resistor (LDR). 
+
+This project makes use of a pre-built "***Photosensitive Sensor Module***":
+
+![Photosensitive Sensor Module](assets/photosensor.jpg)
+
+The reason for using these pre-built sensors is because they come with a 
+digital only (DO) output, which is useful since the Raspberry Pi does not 
+have native support for analog signals. It is also helpful that these sensors 
+have two tiny LEDs on them to visually show when it is powered and when the
+light sensor is tripped.
+
+These sensor modules can be found relatively inexpensively online.
+
+**Potentiometer Adjustment**
+
+The output of the sensor is controlled by a potentiometer 
+(the `+` sign / Phillip's head screw within the blue square); 
+which can be adjusted by turning it clockwise or counter-clockwise.
+
+I recommended adjusting the potentiometer until it only responds to the
+washing machine's "done" / "complete" cycle LED but not the ambient light in
+your washroom.
+
+**Photoresistor**
+
+It's possible to place the entire sensor module where you want it, but in my 
+case I decided to rewire the photoresistor with some longer wires:
+
+![Rewired Photosensor](assets/photosensor-rewired.jpg)
+
+This allowed me to just tape the sensor in place:
+
+![Taped Photosensor](assets/setup-example-taped-sensor.jpg)
+
+(NOTE: I'll probably re-tape this with gaffer's tape, 
+but regular scotch tape is working well for now.)
+
+**GPIO PINs**
+
+[Official Documentation on GPIO Pins](https://www.raspberrypi.org/documentation/usage/gpio/)
+
+The `VCC` line must be connected to a `3V3 Power` GPIO pin.
+
+The `GND` (ground) line must be connected to a `Ground` GPIO pin.
+
+The `DO` (digital output) line is connected to GPIO pin `4`*.
+
+[Click here for an image showing GPIO Pins](assets/gpiopins.png)
+
+*NOTE: Other GPIO pins can be used instead, but the configuration of the script 
+must be set to the pin you choose (see the "How to Use" section below).
 
 ## How to Use
 
@@ -192,7 +288,7 @@ You only need to use ***__ONE__*** of these methods, but you can mix-and-match i
     ./main.py --token 'REQUIRED-token-goes-here' --watchers 'optional-my-user-id optional-some-other-user-id'
     ```
 
-### Bot Commands
+## Bot Commands
 
 There are several supported bot commands that can be used once the bot is online.
 
@@ -205,7 +301,7 @@ The commands must be prefixed by the assigned prefix (also defined in the config
 
 NOTE: For the sake of readability, the following details on each command will use the default prefix.
 
-#### Get User ID by Name
+### Get User ID by Name
 
 Provides a message with the user ID of any username passed to it.
 
@@ -216,7 +312,7 @@ Command: `!id [username]`
 Aliases: `!get-id`, `!user-id`, `!uid`
 
 
-#### List Watch List
+### List Watch List
 
 Provides a message of all current users on the watch list.
 
@@ -224,7 +320,7 @@ Command: `!watchlist`
 
 Aliases: `!watchers`, `!list`, `!users`
 
-#### Send DMs from Bot to All Watchers
+### Send DMs from Bot to All Watchers
 
 Sends a direct message (DM) to all current users on the watch list.
 
@@ -234,7 +330,7 @@ Command: `!broadcast "your message"`
 
 Aliases: `!dm`
 
-#### Add User to Watch List
+### Add User to Watch List
 
 Adds a user or users to the watch list.
 
@@ -244,7 +340,7 @@ Command: `!add ([username-or-id] ... [additional-username-or-id])`
 
 Aliases: `!watch`, `!subscribe`
 
-#### Remove User from Watch List
+### Remove User from Watch List
 
 Removes a user or users from the watch list.
 
